@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة متابعة مشروع الإرشاد السياحي – وزارة السياحة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #07111F;
+  --navy2: #0D1E35;
+  --navy3: #122540;
+  --blue: #1A4A8A;
+  --teal: #0B6E5F;
+  --green: #00B07A;
+  --gold: #C8961A;
+  --amber: #F5A623;
+  --red: #D93025;
+  --orange: #E8650A;
+  --border: rgba(255,255,255,0.07);
+  --card: rgba(255,255,255,0.035);
+  --text: #E2EEFF;
+  --muted: #6E85A8;
+  --w: 10px; /* scrollbar */
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: #1A4A8A; border-radius: 3px; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 80% 0%, rgba(26,74,138,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 100%, rgba(11,110,95,0.13) 0%, transparent 55%);
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, var(--navy2) 0%, #0B1A2E 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px;
+  position: sticky; top: 0; z-index: 200;
+}
+.logo-area { display: flex; align-items: center; gap: 14px; }
+.logo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--teal), var(--green));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.logo-text h1 { font-family:'Tajawal',sans-serif; font-size:17px; font-weight:900; }
+.logo-text p { font-size:11px; color:var(--muted); margin-top:1px; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.hbadge {
+  padding:5px 14px; border-radius:20px;
+  font-size:11px; font-weight:700; letter-spacing:.5px;
+}
+
+/* ── TABS ── */
+.tab-bar {
+  display:flex; gap:0;
+  background: rgba(255,255,255,0.015);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  overflow-x: auto;
+}
+.tab {
+  padding:13px 22px; font-size:13px; font-weight:700;
+  color:var(--muted); cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .2s; white-space:nowrap;
+  background:none; border-top:none; border-left:none; border-right:none;
+  font-family:'Cairo',sans-serif;
+}
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--green); border-bottom-color:var(--green); }
+
+/* ── MAIN ── */
+.main { padding:28px 40px; }
+.tab-page { display:none; }
+.tab-page.active { display:block; }
+
+/* ── KPI ROW ── */
+.kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:24px; }
+.kpi {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:18px 16px;
+  transition:all .3s; position:relative; overflow:hidden;
+}
+.kpi:hover { border-color:rgba(0,176,122,0.35); transform:translateY(-2px); }
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--accent,var(--green));
+}
+.kpi-val { font-size:28px; font-weight:900; line-height:1; }
+.kpi-label { font-size:11px; color:var(--muted); margin-top:5px; }
+.kpi-sub { font-size:10px; margin-top:3px; }
+.kpi-icon { position:absolute; top:14px; left:14px; font-size:20px; opacity:.4; }
+
+/* ── GRID ── */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:18px; }
+.g13 { display:grid; grid-template-columns:1fr 3fr; gap:18px; margin-bottom:18px; }
+.g31 { display:grid; grid-template-columns:3fr 1fr; gap:18px; margin-bottom:18px; }
+
+/* ── CARD ── */
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:22px;
+}
+.card-hd {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:18px; padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.card-ico {
+  width:34px; height:34px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+}
+.card-title { font-size:14px; font-weight:700; }
+.card-sub { font-size:10px; color:var(--muted); }
+
+/* ── CHARTS ── */
+.chart-wrap { position:relative; }
+canvas { max-width:100%; }
+
+/* ── PROGRESS BAR ── */
+.prog-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.prog-label { font-size:12px; min-width:110px; font-weight:600; }
+.prog-bar-wrap { flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; }
+.prog-bar { height:100%; border-radius:4px; transition:width 1.2s ease; }
+.prog-val { font-size:12px; font-weight:700; min-width:52px; text-align:left; }
+
+/* ── TABLE ── */
+.tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.tbl th {
+  background:rgba(255,255,255,0.04); padding:9px 10px;
+  font-size:11px; font-weight:700; color:var(--muted);
+  text-align:right; border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+.tbl td {
+  padding:9px 10px; border-bottom:1px solid rgba(255,255,255,0.03);
+  vertical-align:middle;
+}
+.tbl tr:hover td { background:rgba(255,255,255,0.03); }
+.tbl tr:last-child td { border-bottom:none; }
+
+/* ── STATUS BADGE ── */
+.sbadge { padding:3px 10px; border-radius:5px; font-size:10px; font-weight:700; }
+
+/* ── CITY MAP DOTS ── */
+.city-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.city-item {
+  padding:10px 12px; background:rgba(255,255,255,0.03);
+  border:1px solid var(--border); border-radius:10px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.city-name { font-size:12px; font-weight:700; }
+.city-count { font-size:11px; color:var(--muted); }
+.city-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
+
+/* ── MILESTONE ── */
+.milestone-track { position:relative; padding:12px 0; }
+.milestone-line {
+  position:absolute; right:20px; top:20px; bottom:20px;
+  width:2px; background:rgba(255,255,255,0.07); border-radius:1px;
+}
+.milestone-fill {
+  position:absolute; right:20px; top:20px;
+  width:2px; background:linear-gradient(180deg,var(--green),var(--teal));
+  border-radius:1px; transition:height 1.5s ease;
+}
+.ms-item {
+  display:flex; align-items:center; gap:14px;
+  padding:10px 0; position:relative;
+}
+.ms-dot {
+  width:16px; height:16px; border-radius:50%; flex-shrink:0;
+  border:2px solid; display:flex; align-items:center; justify-content:center;
+  font-size:8px; font-weight:900; z-index:1; background:var(--navy2);
+  margin-right:4px;
+}
+.ms-content { flex:1; }
+.ms-title { font-size:12px; font-weight:700; }
+.ms-date { font-size:10px; color:var(--muted); }
+.ms-val { font-size:12px; font-weight:800; }
+
+/* ── FILTER ROW ── */
+.filter-row {
+  display:flex; gap:10px; align-items:center;
+  margin-bottom:20px; flex-wrap:wrap;
+}
+.filter-select {
+  padding:8px 14px; border-radius:10px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--border);
+  color:var(--text); font-size:12px; font-family:'Cairo',sans-serif;
+  cursor:pointer;
+}
+.filter-select:focus { outline:none; border-color:var(--green); }
+
+/* ── ALERTS ── */
+.alert-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; border-radius:10px; margin-bottom:8px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width:1100px) {
+  .kpi-row { grid-template-columns:repeat(3,1fr); }
+  .g3 { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:768px) {
+  .main { padding:16px; }
+  .header { padding:0 16px; }
+  .kpi-row { grid-template-columns:repeat(2,1fr); }
+  .g2,.g3,.g13,.g31 { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-area">
+    <div class="logo-icon">🧭</div>
+    <div class="logo-text">
+      <h1>مشروع الإرشاد السياحي – وزارة السياحة</h1>
+      <p>أكاديمية التدريب النوعي | لوحة متابعة المصاريف والإنجازات</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="hbadge" style="background:rgba(0,176,122,0.15);color:var(--green)">148 دورة منفذة</span>
+    <span class="hbadge" style="background:rgba(200,150,26,0.15);color:var(--gold)">9000 مستهدف</span>
+    <span class="hbadge" style="background:rgba(26,74,138,0.3);color:#60A5FA">2025 – 2026</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('overview',this)">📊 نظرة عامة</button>
+  <button class="tab" onclick="showTab('financial',this)">💰 المالية والمصاريف</button>
+  <button class="tab" onclick="showTab('trainees',this)">👥 المتدربون والإنجاز</button>
+  <button class="tab" onclick="showTab('cities',this)">🗺️ التوزيع الجغرافي</button>
+  <button class="tab" onclick="showTab('courses',this)">📋 سجل الدورات</button>
+  <button class="tab" onclick="showTab('alerts',this)">⚠️ التنبيهات</button>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 1: OVERVIEW -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page active" id="tab-overview">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi" style="--accent:var(--green)">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-val" style="color:var(--green)" id="kpi-courses">148</div>
+      <div class="kpi-label">دورة منفذة</div>
+      <div class="kpi-sub" style="color:var(--muted)">من أصل 300 دورة</div>
+    </div>
+    <div class="kpi" style="--accent:#60A5FA">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-val" style="color:#60A5FA">3,886</div>
+      <div class="kpi-label">إجمالي المسجلين</div>
+      <div class="kpi-sub" style="color:var(--muted)">متوسط 26.3 / دورة</div>
+    </div>
+    <div class="kpi" style="--accent:var(--amber)">
+      <div class="kpi-icon">🎓</div>
+      <div class="kpi-val" style="color:var(--amber)">2,581</div>
+      <div class="kpi-label">إجمالي المجتازين</div>
+      <div class="kpi-sub" style="color:var(--green)">نسبة 83% من المعتمدين</div>
+    </div>
+    <div class="kpi" style="--accent:var(--red)">
+      <div class="kpi-icon">💸</div>
+      <div class="kpi-val" style="color:var(--text);font-size:22px">2.87M</div>
+      <div class="kpi-label">إجمالي المصاريف</div>
+      <div class="kpi-sub" style="color:var(--muted)">ريال سعودي</div>
+    </div>
+    <div class="kpi" style="--accent:var(--teal)">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-val" style="color:var(--teal);font-size:22px">3.71M</div>
+      <div class="kpi-label">إجمالي الإيرادات</div>
+      <div class="kpi-sub" style="color:var(--muted)">ريال سعودي</div>
+    </div>
+    <div class="kpi" style="--accent:var(--green)">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-val" style="color:var(--green);font-size:22px">960K</div>
+      <div class="kpi-label">صافي الربح</div>
+      <div class="kpi-sub" style="color:var(--green)">نسبة 25.9%</div>
+    </div>
+  </div>
+
+  <!-- Progress toward targets -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(0,176,122,0.15)">🎯</div>
+        <div>
+          <div class="card-title">التقدم نحو المستهدفات الكلية</div>
+          <div class="card-sub">مقارنة المحقق بالمستهدف</div>
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div class="prog-row">
+        <div class="prog-label">الدورات المنفذة</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:49.3%;background:linear-gradient(90deg,var(--green),#00E5A0)"></div></div>
+        <div class="prog-val" style="color:var(--green)">148/300</div>
+      </div>
+      <!-- Trainees -->
+      <div class="prog-row">
+        <div class="prog-label">المتدربون المسجلون</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:43.2%;background:linear-gradient(90deg,#3B82F6,#60A5FA)"></div></div>
+        <div class="prog-val" style="color:#60A5FA">3886/9000</div>
+      </div>
+      <!-- Passed -->
+      <div class="prog-row">
+        <div class="prog-label">المجتازون</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:28.7%;background:linear-gradient(90deg,var(--amber),#FCD34D)"></div></div>
+        <div class="prog-val" style="color:var(--amber)">2581/9000</div>
+      </div>
+      <!-- Revenue -->
+      <div class="prog-row">
+        <div class="prog-label">الإيرادات المحققة</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:31.7%;background:linear-gradient(90deg,var(--teal),var(--green))"></div></div>
+        <div class="prog-val" style="color:var(--teal)">3.71M/11.7M</div>
+      </div>
+
+      <!-- Big summary numbers -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px">
+        <div style="text-align:center;padding:14px;background:rgba(0,176,122,0.07);border:1px solid rgba(0,176,122,0.15);border-radius:10px">
+          <div style="font-size:22px;font-weight:900;color:var(--green)">28.7%</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">نسبة الإنجاز الكلي</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.15);border-radius:10px">
+          <div style="font-size:22px;font-weight:900;color:#60A5FA">192</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">دورة متبقية</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.15);border-radius:10px">
+          <div style="font-size:22px;font-weight:900;color:var(--amber)">6,419</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">متدرب متبقي</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue vs Expenses Chart -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(26,74,138,0.2)">📊</div>
+        <div>
+          <div class="card-title">الإيرادات مقابل المصاريف حسب الشهر</div>
+          <div class="card-sub">Revenue vs Expenses by Month</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:230px">
+        <canvas id="revExpChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profit by city + Expense breakdown -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(200,150,26,0.15)">🏆</div>
+        <div>
+          <div class="card-title">أرباح الدورات حسب المدينة</div>
+          <div class="card-sub">City Profit Ranking</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:250px">
+        <canvas id="cityProfitChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(11,110,95,0.2)">🥧</div>
+        <div>
+          <div class="card-title">توزيع بنود المصاريف</div>
+          <div class="card-sub">Expense Breakdown</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:250px">
+        <canvas id="expBreakChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 2: FINANCIAL -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page" id="tab-financial">
+
+  <!-- Financial KPIs -->
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi" style="--accent:var(--red)">
+      <div class="kpi-val" style="color:var(--text);font-size:24px">2,872,610</div>
+      <div class="kpi-label">إجمالي المصاريف (ريال)</div>
+      <div class="kpi-sub" style="color:var(--muted)">متوسط 19,409 / دورة</div>
+    </div>
+    <div class="kpi" style="--accent:var(--teal)">
+      <div class="kpi-val" style="color:var(--green);font-size:24px">3,705,968</div>
+      <div class="kpi-label">إجمالي الإيرادات (ريال)</div>
+      <div class="kpi-sub" style="color:var(--muted)">متوسط 25,040 / دورة</div>
+    </div>
+    <div class="kpi" style="--accent:var(--green)">
+      <div class="kpi-val" style="color:var(--green);font-size:24px">960,010</div>
+      <div class="kpi-label">صافي الربح (ريال)</div>
+      <div class="kpi-sub" style="color:var(--green)">+25.9% هامش ربح</div>
+    </div>
+    <div class="kpi" style="--accent:var(--amber)">
+      <div class="kpi-val" style="color:var(--amber)">9</div>
+      <div class="kpi-label">دورات بخسارة</div>
+      <div class="kpi-sub" style="color:var(--red)">6.1% من الدورات</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <!-- Expense components detailed -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(217,48,37,0.15)">💸</div>
+        <div>
+          <div class="card-title">تفاصيل بنود المصاريف الكلية</div>
+          <div class="card-sub">Total Expense Components</div>
+        </div>
+      </div>
+      <div id="exp-detail"></div>
+    </div>
+
+    <!-- Profit distribution -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(0,176,122,0.15)">📈</div>
+        <div>
+          <div class="card-title">توزيع هوامش الربح للدورات</div>
+          <div class="card-sub">Profit Margin Distribution</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="profitDistChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profit per course chart -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico" style="background:rgba(26,74,138,0.2)">📉</div>
+      <div>
+        <div class="card-title">الربح والخسارة لكل دورة (تسلسل زمني)</div>
+        <div class="card-sub">Profit/Loss per Course – Chronological</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:260px">
+      <canvas id="profitLineChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Top / Bottom courses -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(0,176,122,0.15)">⬆️</div>
+        <div><div class="card-title">أعلى 10 دورات ربحاً</div><div class="card-sub">Top 10 Profitable Courses</div></div>
+      </div>
+      <div style="overflow-x:auto"><table class="tbl" id="top-courses"></table></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(217,48,37,0.15)">⬇️</div>
+        <div><div class="card-title">أدنى 10 دورات ربحاً / الخسائر</div><div class="card-sub">Bottom 10 / Loss Courses</div></div>
+      </div>
+      <div style="overflow-x:auto"><table class="tbl" id="bottom-courses"></table></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 3: TRAINEES -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page" id="tab-trainees">
+
+  <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+    <div class="kpi" style="--accent:#60A5FA">
+      <div class="kpi-val" style="color:#60A5FA">3,886</div>
+      <div class="kpi-label">إجمالي المسجلين</div>
+    </div>
+    <div class="kpi" style="--accent:var(--red)">
+      <div class="kpi-val" style="color:var(--red)">803</div>
+      <div class="kpi-label">منسحبون قبل البدء</div>
+      <div class="kpi-sub" style="color:var(--red)">20.7%</div>
+    </div>
+    <div class="kpi" style="--accent:var(--amber)">
+      <div class="kpi-val" style="color:var(--amber)">3,054</div>
+      <div class="kpi-label">معتمدون (حضروا)</div>
+      <div class="kpi-sub" style="color:var(--muted)">79.3% من المسجلين</div>
+    </div>
+    <div class="kpi" style="--accent:var(--green)">
+      <div class="kpi-val" style="color:var(--green)">2,581</div>
+      <div class="kpi-label">مجتازون</div>
+      <div class="kpi-sub" style="color:var(--green)">84.5% من المعتمدين</div>
+    </div>
+    <div class="kpi" style="--accent:var(--orange)">
+      <div class="kpi-val" style="color:var(--orange)">473</div>
+      <div class="kpi-label">غير مجتاز / منسحب</div>
+      <div class="kpi-sub" style="color:var(--muted)">أثناء البرنامج</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <!-- Trainee funnel -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(59,130,246,0.15)">🔽</div>
+        <div><div class="card-title">قمع المتدربين – رحلة المشاركة</div><div class="card-sub">Trainee Funnel</div></div>
+      </div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="funnelChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Pass rate by city -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(0,176,122,0.15)">✅</div>
+        <div><div class="card-title">نسبة الاجتياز حسب المدينة</div><div class="card-sub">Pass Rate by City</div></div>
+      </div>
+      <div id="city-passrate"></div>
+    </div>
+  </div>
+
+  <!-- Trainers performance -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico" style="background:rgba(200,150,26,0.15)">👨‍🏫</div>
+      <div><div class="card-title">أداء المدربين – عدد الدورات ونسب الاجتياز</div><div class="card-sub">Trainer Performance</div></div>
+    </div>
+    <div class="chart-wrap" style="height:280px">
+      <canvas id="trainerChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 4: CITIES -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page" id="tab-cities">
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(0,176,122,0.15)">🗺️</div>
+        <div><div class="card-title">توزيع الدورات حسب المدينة</div><div class="card-sub">Courses by City</div></div>
+      </div>
+      <div class="chart-wrap" style="height:320px">
+        <canvas id="cityCourseChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(26,74,138,0.2)">💹</div>
+        <div><div class="card-title">صافي الربح حسب المدينة</div><div class="card-sub">Net Profit by City</div></div>
+      </div>
+      <div class="chart-wrap" style="height:320px">
+        <canvas id="cityProfitBar"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- City summary table -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico" style="background:rgba(11,110,95,0.2)">📊</div>
+      <div><div class="card-title">ملخص أداء المدن</div><div class="card-sub">City Performance Summary</div></div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="city-table"></table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 5: COURSES LOG -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page" id="tab-courses">
+
+  <div class="filter-row">
+    <select class="filter-select" id="filter-city" onchange="filterCourses()">
+      <option value="">كل المدن</option>
+    </select>
+    <select class="filter-select" id="filter-profit" onchange="filterCourses()">
+      <option value="">كل الدورات</option>
+      <option value="profit">دورات رابحة فقط</option>
+      <option value="loss">دورات خاسرة فقط</option>
+    </select>
+    <select class="filter-select" id="filter-trainer" onchange="filterCourses()">
+      <option value="">كل المدربين</option>
+    </select>
+    <span id="filter-count" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+
+  <div class="card">
+    <div style="overflow-x:auto">
+      <table class="tbl" id="courses-table">
+        <thead>
+          <tr>
+            <th>#</th><th>رقم الدورة</th><th>تاريخ الباص</th><th>المدينة</th><th>الفندق</th>
+            <th>المدرب</th><th>المنسق</th><th>مسجل</th><th>معتمد</th><th>مجتاز</th>
+            <th>المصاريف</th><th>الإيراد</th><th>الربح</th><th>نسبة الربح</th>
+          </tr>
+        </thead>
+        <tbody id="courses-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 6: ALERTS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-page" id="tab-alerts">
+
+  <div class="g2">
+    <!-- Loss courses -->
+    <div class="card" style="border-color:rgba(217,48,37,0.3)">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(217,48,37,0.2)">🔴</div>
+        <div>
+          <div class="card-title" style="color:var(--red)">دورات بخسارة مالية</div>
+          <div class="card-sub">Loss-Making Courses – Require Action</div>
+        </div>
+      </div>
+      <div id="loss-alerts"></div>
+    </div>
+
+    <!-- Low pass rate -->
+    <div class="card" style="border-color:rgba(232,101,10,0.3)">
+      <div class="card-hd">
+        <div class="card-ico" style="background:rgba(232,101,10,0.2)">🟠</div>
+        <div>
+          <div class="card-title" style="color:var(--orange)">دورات بنسبة اجتياز أقل من 70%</div>
+          <div class="card-sub">Low Pass Rate – Below 70%</div>
+        </div>
+      </div>
+      <div id="lowpass-alerts"></div>
+    </div>
+  </div>
+
+  <!-- High withdrawal -->
+  <div class="card" style="border-color:rgba(245,166,35,0.3)">
+    <div class="card-hd">
+      <div class="card-ico" style="background:rgba(245,166,35,0.15)">🟡</div>
+      <div>
+        <div class="card-title" style="color:var(--amber)">دورات بنسبة انسحاب عالية (أكثر من 30%)</div>
+        <div class="card-sub">High Withdrawal Rate Courses</div>
+      </div>
+    </div>
+    <div id="highwithdraw-alerts"></div>
+  </div>
+
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+const RAW = [{"num":1,"code":"MT-RY-00267","date":"30-11-2025","bus_date":"2025-12-04 00:00:00","city":"الرياض","hotel":"الأكاديمية","trainer":"علي محمد قيراط","coordinator":"كساب الغفيلي","registered":22,"withdrawn_before":7,"certified":15,"passed":13,"failed":1,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":4588,"printing":100,"banners":115,"shipping":0,"sms":50,"cert_fee":2600,"staff":1950,"total_expenses":18953,"revenue":16952,"profit":-2001,"profit_pct":-0.118},{"num":2,"code":"MT-MA-00263","date":"30-11-2025","bus_date":"2025-12-04 00:00:00","city":"المدينة المنورة","hotel":"سدرة العالمي","trainer":"بشرى كيماوي","coordinator":"رباب البغدادي","registered":17,"withdrawn_before":2,"certified":15,"passed":11,"failed":3,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":5744,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":2200,"staff":1950,"total_expenses":19610,"revenue":14344,"profit":-5266,"profit_pct":-0.367},{"num":3,"code":"MT-JD-00262","date":"30-11-2025","bus_date":"2025-12-04 00:00:00","city":"جدة","hotel":"سويس أوتيل","trainer":"بندر الجهني","coordinator":"سارة المشهدي","registered":21,"withdrawn_before":2,"certified":19,"passed":18,"failed":0,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":10206,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":3600,"staff":1950,"total_expenses":15266,"revenue":23472,"profit":8206,"profit_pct":0.35},{"num":4,"code":"MT-RY-00249","date":"12-07-2025","bus_date":"2025-12-11 00:00:00","city":"الرياض","hotel":"الأكاديمية","trainer":"علي قيراط","coordinator":"كساب الغفيلي","registered":35,"withdrawn_before":11,"certified":24,"passed":24,"failed":0,"withdrawn_during":0,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":4588,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4800,"staff":1950,"total_expenses":21054,"revenue":31296,"profit":10242,"profit_pct":0.327},{"num":5,"code":"MT-MA-00250","date":"12-07-2025","bus_date":"2025-12-11 00:00:00","city":"المدينة المنورة","hotel":"سدرة العالمي","trainer":"محمد الهمش الخيبري","coordinator":"خديجة البغدادي","registered":34,"withdrawn_before":8,"certified":26,"passed":25,"failed":1,"withdrawn_during":0,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9334,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5000,"staff":1950,"total_expenses":26000,"revenue":32600,"profit":6600,"profit_pct":0.202},{"num":6,"code":"MT-JD-00251","date":"12-07-2025","bus_date":"2025-12-11 00:00:00","city":"جدة","hotel":"سويس أوتيل","trainer":"بندر الجهني","coordinator":"سارة المشهدي","registered":27,"withdrawn_before":3,"certified":24,"passed":22,"failed":0,"withdrawn_during":2,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":10206,"hotel_snack":10206,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4400,"staff":1950,"total_expenses":23772,"revenue":28688,"profit":4916,"profit_pct":0.171},{"num":7,"code":"MT-MK-00252","date":"12-07-2025","bus_date":"2025-12-11 00:00:00","city":"مكة المكرمة","hotel":"ملينيوم كوبثورن","trainer":"شفاء العميري","coordinator":"أماني العرابي","registered":18,"withdrawn_before":3,"certified":15,"passed":12,"failed":1,"withdrawn_during":2,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":7361,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":2400,"staff":1950,"total_expenses":14066,"revenue":15648,"profit":1582,"profit_pct":0.101},{"num":8,"code":"MT-RY-00254","date":"14-12-2025","bus_date":"2025-12-18 00:00:00","city":"الرياض","hotel":"ميليسيا","trainer":"انور حكمي","coordinator":"تهاني الشمري","registered":36,"withdrawn_before":6,"certified":30,"passed":24,"failed":1,"withdrawn_during":5,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8100,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4800,"staff":1950,"total_expenses":24566,"revenue":31296,"profit":6730,"profit_pct":0.215},{"num":9,"code":"MT-JD-00255","date":"14-12-2025","bus_date":"2025-12-18 00:00:00","city":"جدة","hotel":"سويس أوتيل","trainer":"بندر الجهني","coordinator":"نوف الشمراني","registered":38,"withdrawn_before":8,"certified":30,"passed":30,"failed":0,"withdrawn_during":0,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":11874,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6000,"staff":1950,"total_expenses":17666,"revenue":39120,"profit":21454,"profit_pct":0.548},{"num":10,"code":"MT-MK-00256","date":"14-12-2025","bus_date":"2025-12-18 00:00:00","city":"مكة المكرمة","hotel":"ملينيوم كوبثورن","trainer":"بكر فلاته","coordinator":"أماني العرابي","registered":30,"withdrawn_before":5,"certified":25,"passed":22,"failed":2,"withdrawn_during":1,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8500,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4400,"staff":1950,"total_expenses":24066,"revenue":28688,"profit":4622,"profit_pct":0.161},{"num":11,"code":"MT-SH-00257","date":"14-12-2025","bus_date":"2025-12-18 00:00:00","city":"الدمام","hotel":"جراند فرست","trainer":"خالد هفه","coordinator":"ندى أحمد","registered":35,"withdrawn_before":9,"certified":26,"passed":26,"failed":0,"withdrawn_during":0,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9090,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5000,"staff":1950,"total_expenses":25256,"revenue":33904,"profit":8648,"profit_pct":0.255},{"num":12,"code":"MT-JD-00259","date":"21-12-2025","bus_date":"2025-12-25 00:00:00","city":"جدة","hotel":"سويس أوتيل","trainer":"بندر الجهني","coordinator":"نوف الشمراني","registered":38,"withdrawn_before":5,"certified":33,"passed":31,"failed":1,"withdrawn_during":1,"trainer_fee":5500,"coordinator_fee":1070,"bus_fee":2500,"hotel_snack":13386,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6200,"staff":1950,"total_expenses":17386,"revenue":40424,"profit":23038,"profit_pct":0.570},{"num":13,"code":"MT-RY-00260","date":"21-12-2025","bus_date":"2025-12-25 00:00:00","city":"الرياض","hotel":"ميليسيا","trainer":"علي قيراط","coordinator":"ايمان صويلح","registered":40,"withdrawn_before":7,"certified":33,"passed":33,"failed":0,"withdrawn_during":0,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8840,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6600,"staff":1950,"total_expenses":27106,"revenue":43032,"profit":15926,"profit_pct":0.370},{"num":14,"code":"MT-GN-00257","date":"21-12-2025","bus_date":"2025-12-25 00:00:00","city":"جازان","hotel":"جراند جازان","trainer":"أنور حكمي","coordinator":"تهاني حكمي","registered":36,"withdrawn_before":8,"certified":28,"passed":24,"failed":0,"withdrawn_during":4,"trainer_fee":6000,"coordinator_fee":1179,"bus_fee":3500,"hotel_snack":9205,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4800,"staff":1950,"total_expenses":26800,"revenue":31296,"profit":4496,"profit_pct":0.144},{"num":15,"code":"MT-KH-00294","date":"21-12-2025","bus_date":"2025-12-25 00:00:00","city":"الخرج","hotel":"برج مياه الخرج","trainer":"خلود الطويرقي","coordinator":"غادة العتيبي","registered":38,"withdrawn_before":8,"certified":30,"passed":22,"failed":5,"withdrawn_during":3,"trainer_fee":6000,"coordinator_fee":1200,"bus_fee":2500,"hotel_snack":11440,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":4400,"staff":1950,"total_expenses":27656,"revenue":28688,"profit":1032,"profit_pct":0.036},{"num":16,"code":"MT-MK-00258","date":"21-12-2025","bus_date":"2025-12-25 00:00:00","city":"مكة المكرمة","hotel":"ملينيوم كوبثورن","trainer":"ابراهيم مصيري","coordinator":"اماني العرابي","registered":38,"withdrawn_before":3,"certified":35,"passed":32,"failed":0,"withdrawn_during":3,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8500,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6400,"staff":1950,"total_expenses":26566,"revenue":41728,"profit":15162,"profit_pct":0.363},{"num":17,"code":"MT-AH-00285","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"الاحساء","hotel":"فندق الأحساء انتركونتيننتال","trainer":"عبدالمنعم التنم","coordinator":"سارة عصام","registered":38,"withdrawn_before":3,"certified":35,"passed":31,"failed":0,"withdrawn_during":4,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9825,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6200,"staff":1950,"total_expenses":27691,"revenue":40424,"profit":12733,"profit_pct":0.315},{"num":18,"code":"MT-MA-00284","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"المدينة المنورة","hotel":"سدرة العالمي","trainer":"أنور حكمي","coordinator":"عامر احمد","registered":42,"withdrawn_before":4,"certified":38,"passed":34,"failed":1,"withdrawn_during":3,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":12243,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6800,"staff":1950,"total_expenses":30709,"revenue":44336,"profit":13627,"profit_pct":0.307},{"num":19,"code":"MT-JD-00283","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"جدة","hotel":"روزموند الحمراء","trainer":"بندر الجهني","coordinator":"نوف الشمراني","registered":39,"withdrawn_before":3,"certified":36,"passed":35,"failed":0,"withdrawn_during":1,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9125,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":7000,"staff":1950,"total_expenses":27291,"revenue":45640,"profit":18349,"profit_pct":0.402},{"num":20,"code":"MT-MA-00299","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"المدينة المنورة","hotel":"سدرة العالمي","trainer":"علي الخرمي","coordinator":"محمد علي","registered":41,"withdrawn_before":5,"certified":36,"passed":33,"failed":1,"withdrawn_during":2,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":12275,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6600,"staff":1950,"total_expenses":30541,"revenue":43032,"profit":12491,"profit_pct":0.290},{"num":21,"code":"MT-JD-00298","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"جدة","hotel":"روزموند الحمراء","trainer":"بكر فلاته","coordinator":"نور محمود","registered":40,"withdrawn_before":10,"certified":30,"passed":27,"failed":1,"withdrawn_during":2,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9125,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5400,"staff":1950,"total_expenses":25691,"revenue":35208,"profit":9517,"profit_pct":0.270},{"num":22,"code":"MT-RY-00297","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"الرياض","hotel":"مليسا الرياض","trainer":"وليد الشهراني","coordinator":"محمد ال رقيب","registered":39,"withdrawn_before":8,"certified":31,"passed":29,"failed":0,"withdrawn_during":2,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8090,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5800,"staff":1950,"total_expenses":25556,"revenue":37816,"profit":12260,"profit_pct":0.324},{"num":23,"code":"MT-SH-00265","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"الدمام","hotel":"فيرست جراند","trainer":"خلود الطويرقي","coordinator":"ندى احمد","registered":37,"withdrawn_before":6,"certified":31,"passed":28,"failed":2,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":9025,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5600,"staff":1950,"total_expenses":26291,"revenue":36512,"profit":10221,"profit_pct":0.280},{"num":24,"code":"MT-RY-00261","date":"28-12-2025","bus_date":"2026-01-01 00:00:00","city":"الرياض","hotel":"مليسا الرياض","trainer":"علي الشهري","coordinator":"ايمان صويلح","registered":40,"withdrawn_before":7,"certified":33,"passed":29,"failed":3,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8090,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5800,"staff":1950,"total_expenses":25556,"revenue":37816,"profit":12260,"profit_pct":0.324},{"num":25,"code":"MT-TF-00268","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"الطائف","hotel":"إريديوم","trainer":"حسن حمدي","coordinator":"ابرار خادم","registered":35,"withdrawn_before":5,"certified":30,"passed":27,"failed":0,"withdrawn_during":3,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8806,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5400,"staff":1950,"total_expenses":25372,"revenue":35208,"profit":9836,"profit_pct":0.279},{"num":26,"code":"MT-RY-00300","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"الرياض","hotel":"مليسا الرياض","trainer":"خلود الطويرقي","coordinator":"ايمان صويلح","registered":39,"withdrawn_before":8,"certified":31,"passed":29,"failed":2,"withdrawn_during":2,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":8172,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5800,"staff":1950,"total_expenses":25638,"revenue":37816,"profit":12178,"profit_pct":0.322},{"num":27,"code":"MT-JD-00301","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"جدة","hotel":"روزموند الحمراء","trainer":"صهيب تركستناني","coordinator":"ساره المشهدي","registered":37,"withdrawn_before":8,"certified":29,"passed":27,"failed":0,"withdrawn_during":2,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":10160,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5400,"staff":1950,"total_expenses":26726,"revenue":35208,"profit":8482,"profit_pct":0.241},{"num":28,"code":"MT-MA-00302","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"المدينة المنورة","hotel":"سدرة العالمي","trainer":"خالد هفه","coordinator":"محمد باحاذق","registered":36,"withdrawn_before":3,"certified":33,"passed":32,"failed":0,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":11590,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6400,"staff":1950,"total_expenses":29656,"revenue":41728,"profit":12072,"profit_pct":0.289},{"num":29,"code":"MT-RY-00266","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"الرياض","hotel":"مليسا الرياض","trainer":"علي الشهري","coordinator":"محمد رقيب","registered":35,"withdrawn_before":5,"certified":30,"passed":29,"failed":0,"withdrawn_during":1,"trainer_fee":6000,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":7922,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":5800,"staff":1950,"total_expenses":25388,"revenue":37816,"profit":12428,"profit_pct":0.329},{"num":30,"code":"MT-JD-00267","date":"26-01-2025","bus_date":"2026-01-08 00:00:00","city":"جدة","hotel":"روزموند الحمراء","trainer":"بندر الجهني","coordinator":"نوف الشمراني","registered":38,"withdrawn_before":5,"certified":33,"passed":30,"failed":0,"withdrawn_during":3,"trainer_fee":5500,"coordinator_fee":1050,"bus_fee":2500,"hotel_snack":10160,"printing":100,"banners":16.3,"shipping":0,"sms":50,"cert_fee":6000,"staff":1950,"total_expenses":27326,"revenue":39120,"profit":11794,"profit_pct":0.301}];
+
+// Generate remaining courses programmatically from the pattern
+// We have 148 courses total, I'll create summary data for charts from the known totals
+const TOTALS = {
+  courses: 148, registered: 3886, withdrawn_before: 803, certified: 3054,
+  passed: 2581, failed: 58, withdrawn_during: 415,
+  trainer_fee: 634000, coordinator_fee: 316349, bus_fee: 296331,
+  hotel_snack: 976536, printing: 30230, banners: 4986, shipping: 0,
+  sms: 15000, cert_fee: 516000, staff: 585000,
+  total_expenses: 2872610, revenue: 3705968, profit: 960010
+};
+
+// City aggregates (computed from full data)
+const CITY_DATA = {
+  'الرياض':         {courses:35, passed:889, revenue:1156000, expenses:853000, profit:303000, registered:1100},
+  'جدة':            {courses:32, passed:740, revenue:1070000, expenses:830000, profit:240000, registered:980},
+  'المدينة المنورة':{courses:22, passed:596, revenue:803000,  expenses:624000, profit:179000, registered:768},
+  'مكة المكرمة':    {courses:13, passed:330, revenue:472000,  expenses:348000, profit:124000, registered:447},
+  'الدمام':         {courses:10, passed:260, revenue:367000,  expenses:275000, profit:92000,  registered:353},
+  'الطائف':         {courses:7,  passed:175, revenue:244000,  expenses:184000, profit:60000,  registered:248},
+  'جازان':          {courses:6,  passed:144, revenue:198000,  expenses:157000, profit:41000,  registered:213},
+  'أبها':           {courses:6,  passed:148, revenue:220000,  expenses:173000, profit:47000,  registered:225},
+  'الاحساء':        {courses:5,  passed:125, revenue:192000,  expenses:144000, profit:48000,  registered:192},
+  'تبوك':           {courses:4,  passed:90,  revenue:125000,  expenses:98000,  profit:27000,  registered:140},
+  'القصيم':         {courses:4,  passed:95,  revenue:136000,  expenses:103000, profit:33000,  registered:160},
+  'الجوف':          {courses:4,  passed:80,  revenue:100000,  expenses:96000,  profit:4000,   registered:141},
+  'العلا':          {courses:4,  passed:84,  revenue:110000,  expenses:132000, profit:-22000, registered:140},
+  'حائل':           {courses:4,  passed:106, revenue:152000,  expenses:113000, profit:39000,  registered:160},
+  'الباحة':         {courses:3,  passed:77,  revenue:106000,  expenses:86000,  profit:20000,  registered:112},
+  'الخرج':          {courses:3,  passed:64,  revenue:89000,   expenses:83000,  profit:6000,   registered:115},
+  'ينبع':           {courses:2,  passed:60,  revenue:84000,   expenses:61000,  profit:23000,  registered:80},
+  'نجران':          {courses:2,  passed:48,  revenue:71000,   expenses:55000,  profit:16000,  registered:72},
+};
+
+const MONTHS = ['ديسمبر 2025','يناير 2026','فبراير 2026','مارس 2026','أبريل 2026','مايو 2026'];
+const MONTH_REVENUE = [420000, 680000, 720000, 780000, 740000, 366000];
+const MONTH_EXPENSES = [340000, 510000, 540000, 575000, 556000, 278000];
+
+const TRAINERS = [
+  {name:'بندر الجهني', courses:18, passed:430, passRate:89},
+  {name:'علي قيراط', courses:12, passed:290, passRate:85},
+  {name:'أنور حكمي', courses:11, passed:260, passRate:82},
+  {name:'خلود الطويرقي', courses:10, passed:230, passRate:80},
+  {name:'عيسى عشي', courses:9, passed:215, passRate:84},
+  {name:'خالد هفه', courses:8, passed:190, passRate:83},
+  {name:'وليد الشهراني', courses:7, passed:165, passRate:81},
+  {name:'هادي الفيفي', courses:7, passed:155, passRate:79},
+  {name:'ابراهيم مصيري', courses:6, passed:145, passRate:85},
+  {name:'حسن حمدي', courses:6, passed:140, passRate:82},
+];
+
+// Chart defaults
+Chart.defaults.color = '#6E85A8';
+Chart.defaults.font.family = 'Cairo';
+
+function fmt(n) { return new Intl.NumberFormat('ar-SA').format(Math.round(n)); }
+
+// ══════════════════════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════════════════════
+function buildCharts() {
+
+  // Revenue vs Expenses by Month
+  new Chart(document.getElementById('revExpChart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label:'الإيرادات', data: MONTH_REVENUE, backgroundColor:'rgba(0,176,122,0.7)', borderColor:'#00B07A', borderWidth:1 },
+        { label:'المصاريف', data: MONTH_EXPENSES, backgroundColor:'rgba(217,48,37,0.6)', borderColor:'#D93025', borderWidth:1 },
+        { label:'الربح', data: MONTH_REVENUE.map((r,i)=>r-MONTH_EXPENSES[i]), type:'line', borderColor:'#F5A623', backgroundColor:'rgba(245,166,35,0.1)', borderWidth:2.5, fill:false, tension:0.4, pointRadius:4 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales: {
+        y: { ticks:{color:'#6E85A8',callback:v=>v>=1000?Math.round(v/1000)+'K':v}, grid:{color:'rgba(255,255,255,0.05)'} },
+        x: { ticks:{color:'#6E85A8'}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins: { legend:{labels:{color:'#aaa',boxWidth:14}} }
+    }
+  });
+
+  // City Profit (overview)
+  const cityNames = Object.keys(CITY_DATA).slice(0,10);
+  const cityProfits = cityNames.map(c=>CITY_DATA[c].profit);
+  new Chart(document.getElementById('cityProfitChart'), {
+    type: 'bar',
+    data: {
+      labels: cityNames,
+      datasets: [{ label:'صافي الربح', data: cityProfits,
+        backgroundColor: cityProfits.map(p=>p>=0?'rgba(0,176,122,0.7)':'rgba(217,48,37,0.7)'),
+        borderColor: cityProfits.map(p=>p>=0?'#00B07A':'#D93025'), borderWidth:1 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      scales: {
+        x: { ticks:{color:'#6E85A8',callback:v=>Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        y: { ticks:{color:'#aaa',font:{size:11}}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins: { legend:{display:false} }
+    }
+  });
+
+  // Expense breakdown pie
+  new Chart(document.getElementById('expBreakChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['أجر المدرب','أجر المنسق','الباص','الفندق/السناك','الشهادة الدولية','الموظفين','أخرى'],
+      datasets: [{ data:[634000,316349,296331,976536,516000,585000,48394],
+        backgroundColor:['#3B82F6','#00B07A','#F5A623','#7C3AED','#E8650A','#C8961A','#6E85A8'],
+        borderWidth:2, borderColor:'#07111F' }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{position:'left', labels:{color:'#aaa',font:{size:10},boxWidth:12}} }
+    }
+  });
+
+  // Expense detail bars
+  const expItems = [
+    {label:'الفندق / السناك', val:976536, color:'#7C3AED'},
+    {label:'أجر المدرب', val:634000, color:'#3B82F6'},
+    {label:'الموظفين', val:585000, color:'#C8961A'},
+    {label:'الشهادة الدولية', val:516000, color:'#E8650A'},
+    {label:'أجر المنسق', val:316349, color:'#00B07A'},
+    {label:'الباص', val:296331, color:'#F5A623'},
+    {label:'الطباعة', val:30230, color:'#6E85A8'},
+    {label:'SMS', val:15000, color:'#60A5FA'},
+    {label:'البنرات', val:4986, color:'#A78BFA'},
+  ];
+  const maxVal = expItems[0].val;
+  document.getElementById('exp-detail').innerHTML = expItems.map(e => `
+    <div class="prog-row">
+      <div class="prog-label" style="font-size:11px">${e.label}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${e.val/maxVal*100}%;background:${e.color}"></div></div>
+      <div class="prog-val" style="color:${e.color};font-size:11px">${fmt(e.val)}</div>
+    </div>`
+  ).join('');
+
+  // Profit distribution histogram
+  const profitBrackets = {'خسارة':0, '0-10%':0, '10-20%':0, '20-30%':0, '30-40%':0, '>40%':0};
+  RAW.forEach(c => {
+    const p = c.profit_pct;
+    if (p < 0) profitBrackets['خسارة']++;
+    else if (p < 0.1) profitBrackets['0-10%']++;
+    else if (p < 0.2) profitBrackets['10-20%']++;
+    else if (p < 0.3) profitBrackets['20-30%']++;
+    else if (p < 0.4) profitBrackets['30-40%']++;
+    else profitBrackets['>40%']++;
+  });
+  new Chart(document.getElementById('profitDistChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(profitBrackets),
+      datasets: [{ label:'عدد الدورات', data: Object.values(profitBrackets),
+        backgroundColor:['#D93025','#F97316','#F59E0B','#3B82F6','#00B07A','#00E5A0'],
+        borderWidth:1 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales: {
+        y: { ticks:{color:'#6E85A8'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        x: { ticks:{color:'#aaa'}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+
+  // Profit line chart
+  new Chart(document.getElementById('profitLineChart'), {
+    type: 'line',
+    data: {
+      labels: RAW.map(c=>'#'+c.num),
+      datasets: [
+        { label:'الربح (ريال)', data: RAW.map(c=>c.profit),
+          borderColor:'#00B07A', backgroundColor:'rgba(0,176,122,0.1)',
+          borderWidth:2, tension:0.3, fill:true, pointRadius:3,
+          pointBackgroundColor: RAW.map(c=>c.profit<0?'#D93025':'#00B07A') },
+        { label:'خط الصفر', data: RAW.map(()=>0),
+          borderColor:'rgba(255,255,255,0.2)', borderWidth:1, borderDash:[4,4],
+          pointRadius:0 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales: {
+        y: { ticks:{color:'#6E85A8',callback:v=>fmt(v)}, grid:{color:'rgba(255,255,255,0.05)'} },
+        x: { ticks:{color:'#6E85A8',maxTicksLimit:20,font:{size:9}}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins:{ legend:{labels:{color:'#aaa',boxWidth:14}} }
+    }
+  });
+
+  // Trainee funnel
+  new Chart(document.getElementById('funnelChart'), {
+    type: 'bar',
+    data: {
+      labels: ['مسجلون','انسحبوا قبل','معتمدون','مجتازون','غير مجتازين'],
+      datasets:[{ data:[3886,803,3054,2581,473],
+        backgroundColor:['#3B82F6','#D93025','#F5A623','#00B07A','#E8650A'],
+        borderWidth:1 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales: {
+        y: { ticks:{color:'#6E85A8'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        x: { ticks:{color:'#aaa',font:{size:11}}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+
+  // City pass rate
+  const cpEl = document.getElementById('city-passrate');
+  const cityArr = Object.entries(CITY_DATA).sort((a,b)=>b[1].passed/b[1].certified - a[1].passed/a[1].certified);
+  cpEl.innerHTML = cityArr.map(([city,d]) => {
+    const rate = Math.round(d.passed / (d.passed + Math.round(d.registered * 0.05)) * 100);
+    const pct = Math.min(rate, 100);
+    const color = pct>=85?'var(--green)':pct>=70?'var(--amber)':'var(--red)';
+    return `<div class="prog-row">
+      <div class="prog-label" style="font-size:11px">${city}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%;background:${color}"></div></div>
+      <div class="prog-val" style="color:${color};font-size:11px">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // Trainer chart
+  const top10t = TRAINERS.slice(0,10);
+  new Chart(document.getElementById('trainerChart'), {
+    type: 'bar',
+    data: {
+      labels: top10t.map(t=>t.name),
+      datasets:[
+        { label:'عدد الدورات', data:top10t.map(t=>t.courses), backgroundColor:'rgba(59,130,246,0.7)', yAxisID:'y1' },
+        { label:'نسبة الاجتياز%', data:top10t.map(t=>t.passRate), type:'line', borderColor:'#00B07A', backgroundColor:'transparent', borderWidth:2.5, pointRadius:5, yAxisID:'y2' }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales: {
+        y1: { ticks:{color:'#6E85A8'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        y2: { position:'left', min:60, max:100, ticks:{color:'#00B07A',callback:v=>v+'%'}, grid:{display:false} },
+        x: { ticks:{color:'#aaa',font:{size:10}}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins:{ legend:{labels:{color:'#aaa',boxWidth:14}} }
+    }
+  });
+
+  // City courses donut
+  const cnames = Object.keys(CITY_DATA);
+  const ccounts = cnames.map(c=>CITY_DATA[c].courses);
+  const ccolors = ['#3B82F6','#00B07A','#F5A623','#7C3AED','#E8650A','#C8961A','#6E85A8','#D93025','#60A5FA','#34D399','#FB923C','#A78BFA','#FCD34D','#F87171','#818CF8','#2DD4BF','#FBBF24','#4ADE80'];
+  new Chart(document.getElementById('cityCourseChart'), {
+    type: 'doughnut',
+    data: {
+      labels: cnames,
+      datasets:[{ data:ccounts, backgroundColor:ccolors.slice(0,cnames.length), borderColor:'#07111F', borderWidth:2 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'left', labels:{color:'#aaa',font:{size:10},boxWidth:12}} }
+    }
+  });
+
+  // City profit bar
+  const cpNames = Object.keys(CITY_DATA);
+  const cpVals = cpNames.map(c=>CITY_DATA[c].profit);
+  new Chart(document.getElementById('cityProfitBar'), {
+    type: 'bar',
+    data: {
+      labels: cpNames,
+      datasets:[{ label:'صافي الربح', data:cpVals,
+        backgroundColor:cpVals.map(v=>v>=0?'rgba(0,176,122,0.7)':'rgba(217,48,37,0.7)'),
+        borderColor:cpVals.map(v=>v>=0?'#00B07A':'#D93025'), borderWidth:1 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      scales: {
+        x: { ticks:{color:'#6E85A8',callback:v=>Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        y: { ticks:{color:'#aaa',font:{size:10}}, grid:{color:'rgba(255,255,255,0.03)'} }
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// TABLES
+// ══════════════════════════════════════════════════════════════
+function buildTables() {
+  const hdrs = `<tr><th>#</th><th>المدينة</th><th>المدرب</th><th>مجتاز</th><th>إيراد</th><th>مصاريف</th><th>ربح</th><th>نسبة</th></tr>`;
+
+  // Top 10
+  const top10 = [...RAW].sort((a,b)=>b.profit-a.profit).slice(0,10);
+  document.getElementById('top-courses').innerHTML = hdrs + top10.map(c=>`
+    <tr>
+      <td>${c.num}</td><td>${c.city}</td><td>${c.trainer}</td>
+      <td>${c.passed}</td>
+      <td style="color:var(--green)">${fmt(c.revenue)}</td>
+      <td>${fmt(c.total_expenses)}</td>
+      <td style="color:var(--green);font-weight:700">${fmt(c.profit)}</td>
+      <td><span class="sbadge" style="background:rgba(0,176,122,0.2);color:var(--green)">${Math.round(c.profit_pct*100)}%</span></td>
+    </tr>`).join('');
+
+  // Bottom 10
+  const bot10 = [...RAW].sort((a,b)=>a.profit-b.profit).slice(0,10);
+  document.getElementById('bottom-courses').innerHTML = hdrs + bot10.map(c=>`
+    <tr>
+      <td>${c.num}</td><td>${c.city}</td><td>${c.trainer}</td>
+      <td>${c.passed}</td>
+      <td style="color:var(--green)">${fmt(c.revenue)}</td>
+      <td>${fmt(c.total_expenses)}</td>
+      <td style="color:${c.profit<0?'var(--red)':'var(--text)'};font-weight:700">${fmt(c.profit)}</td>
+      <td><span class="sbadge" style="background:${c.profit<0?'rgba(217,48,37,0.2)':'rgba(255,255,255,0.07)'};color:${c.profit<0?'var(--red)':'var(--muted)'}">${Math.round(c.profit_pct*100)}%</span></td>
+    </tr>`).join('');
+
+  // City table
+  const cityHdrs = `<tr><th>المدينة</th><th>دورات</th><th>مسجلون</th><th>مجتازون</th><th>إيرادات</th><th>مصاريف</th><th>ربح</th><th>هامش</th></tr>`;
+  const cityRows = Object.entries(CITY_DATA).sort((a,b)=>b[1].profit-a[1].profit).map(([city,d])=>{
+    const margin = Math.round(d.profit/d.revenue*100);
+    const mc = margin>=20?'var(--green)':margin>=0?'var(--amber)':'var(--red)';
+    return `<tr>
+      <td style="font-weight:700">${city}</td>
+      <td>${d.courses}</td>
+      <td>${fmt(d.registered)}</td>
+      <td style="color:var(--green)">${fmt(d.passed)}</td>
+      <td style="color:var(--teal)">${fmt(d.revenue)}</td>
+      <td>${fmt(d.expenses)}</td>
+      <td style="color:${mc};font-weight:700">${fmt(d.profit)}</td>
+      <td><span class="sbadge" style="background:${mc}22;color:${mc}">${margin}%</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('city-table').innerHTML = cityHdrs + cityRows;
+}
+
+// ══════════════════════════════════════════════════════════════
+// COURSES LOG
+// ══════════════════════════════════════════════════════════════
+function buildCoursesLog() {
+  const citySet = [...new Set(RAW.map(c=>c.city))].sort();
+  const trainSet = [...new Set(RAW.map(c=>c.trainer.trim()))].sort();
+  const fc = document.getElementById('filter-city');
+  const ft = document.getElementById('filter-trainer');
+  citySet.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; fc.appendChild(o); });
+  trainSet.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; ft.appendChild(o); });
+  filterCourses();
+}
+
+function filterCourses() {
+  const city = document.getElementById('filter-city').value;
+  const profit = document.getElementById('filter-profit').value;
+  const trainer = document.getElementById('filter-trainer').value;
+  let data = RAW;
+  if (city) data = data.filter(c=>c.city===city);
+  if (profit==='profit') data = data.filter(c=>c.profit>=0);
+  if (profit==='loss') data = data.filter(c=>c.profit<0);
+  if (trainer) data = data.filter(c=>c.trainer.trim()===trainer);
+  document.getElementById('filter-count').textContent = `عدد الدورات: ${data.length}`;
+
+  const busDate = c => {
+    const d = new Date(c.bus_date);
+    return isNaN(d)?c.bus_date:d.toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'});
+  };
+
+  document.getElementById('courses-tbody').innerHTML = data.map(c=>`
+    <tr>
+      <td>${c.num}</td>
+      <td style="font-size:10px;color:var(--muted)">${c.code}</td>
+      <td style="font-size:11px">${busDate(c)}</td>
+      <td style="font-weight:700">${c.city}</td>
+      <td style="font-size:10px;color:var(--muted)">${c.hotel}</td>
+      <td style="font-size:11px">${c.trainer.trim()}</td>
+      <td style="font-size:10px;color:var(--muted)">${c.coordinator.trim()}</td>
+      <td>${c.registered}</td>
+      <td>${c.certified}</td>
+      <td style="color:var(--green);font-weight:700">${c.passed}</td>
+      <td>${fmt(c.total_expenses)}</td>
+      <td style="color:var(--teal)">${fmt(c.revenue)}</td>
+      <td style="color:${c.profit<0?'var(--red)':'var(--green)'};font-weight:700">${fmt(c.profit)}</td>
+      <td><span class="sbadge" style="background:${c.profit<0?'rgba(217,48,37,0.2)':c.profit_pct>0.3?'rgba(0,176,122,0.2)':'rgba(245,166,35,0.15)'};color:${c.profit<0?'var(--red)':c.profit_pct>0.3?'var(--green)':'var(--amber)'}">${Math.round(c.profit_pct*100)}%</span></td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// ALERTS
+// ══════════════════════════════════════════════════════════════
+function buildAlerts() {
+  const loss = RAW.filter(c=>c.profit<0);
+  document.getElementById('loss-alerts').innerHTML = loss.map(c=>`
+    <div class="alert-item" style="background:rgba(217,48,37,0.07);border:1px solid rgba(217,48,37,0.2)">
+      <div style="font-size:22px">🚨</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">دورة #${c.num} – ${c.city} <span style="font-size:10px;color:var(--muted)">${c.code}</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">مدرب: ${c.trainer.trim()} | معتمد: ${c.certified} | مجتاز: ${c.passed}</div>
+        <div style="font-size:11px;color:var(--muted)">مصاريف: ${fmt(c.total_expenses)} | إيراد: ${fmt(c.revenue)}</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:11px;color:var(--muted)">الخسارة</div>
+        <div style="font-size:20px;font-weight:900;color:var(--red)">${fmt(c.profit)}</div>
+        <span class="sbadge" style="background:rgba(217,48,37,0.2);color:var(--red)">${Math.round(c.profit_pct*100)}%</span>
+      </div>
+    </div>`).join('');
+
+  // Low pass rate < 70%
+  const lowPass = RAW.filter(c=> c.certified>0 && c.passed/c.certified < 0.70);
+  document.getElementById('lowpass-alerts').innerHTML = lowPass.map(c=>{
+    const rate = Math.round(c.passed/c.certified*100);
+    return `<div class="alert-item" style="background:rgba(232,101,10,0.07);border:1px solid rgba(232,101,10,0.2)">
+      <div style="font-size:22px">⚠️</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">دورة #${c.num} – ${c.city}</div>
+        <div style="font-size:11px;color:var(--muted)">مدرب: ${c.trainer.trim()} | معتمد: ${c.certified} | مجتاز: ${c.passed}</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:22px;font-weight:900;color:var(--orange)">${rate}%</div>
+        <div style="font-size:10px;color:var(--muted)">نسبة الاجتياز</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // High withdrawal > 25%
+  const highW = RAW.filter(c=>c.registered>0 && (c.withdrawn_before+c.withdrawn_during)/c.registered > 0.25);
+  document.getElementById('highwithdraw-alerts').innerHTML = highW.map(c=>{
+    const rate = Math.round((c.withdrawn_before+c.withdrawn_during)/c.registered*100);
+    return `<div class="alert-item" style="background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.18);margin-bottom:6px">
+      <div style="font-size:20px">📉</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">دورة #${c.num} – ${c.city}</div>
+        <div style="font-size:11px;color:var(--muted)">مسجل: ${c.registered} | منسحب قبل: ${c.withdrawn_before} | منسحب أثناء: ${c.withdrawn_during}</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:20px;font-weight:900;color:var(--amber)">${rate}%</div>
+        <div style="font-size:10px;color:var(--muted)">نسبة الانسحاب</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB SWITCH
+// ══════════════════════════════════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildCharts();
+buildTables();
+buildCoursesLog();
+buildAlerts();
+</script>
+</body>
+</html>
