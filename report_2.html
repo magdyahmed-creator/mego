@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير تحليلات التعلم — برنامج تدريب العمالة المنزلية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#F0F4FF;color:#1E293B;direction:rtl;}
+
+/* ══ HEADER ══ */
+.hdr{
+  background:linear-gradient(135deg,#0B1D3A 0%,#1A3A6E 55%,#0A7B72 100%);
+  padding:0 40px;
+  position:relative;overflow:hidden;
+}
+.hdr::before{content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;}
+.hdr-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 0 18px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.hdr-badges{display:flex;align-items:center;gap:10px;}
+.hbdg{
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.hdr-title-wrap{text-align:center;flex:1;}
+.hdr-title{
+  font-family:'Tajawal',sans-serif;font-size:26px;font-weight:900;
+  color:white;line-height:1.2;
+}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;}
+.hdr-ico{
+  width:56px;height:56px;border-radius:14px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+}
+
+/* KPI BAR */
+.kpi-bar{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.kpi-cell{
+  padding:20px 16px;text-align:center;
+  border-left:1px solid rgba(255,255,255,.07);
+  transition:background .2s;
+}
+.kpi-cell:last-child{border-left:none;}
+.kpi-cell:hover{background:rgba(255,255,255,.05);}
+.kpi-num{
+  font-family:'Tajawal',sans-serif;font-size:34px;font-weight:900;
+  line-height:1;margin-bottom:6px;
+}
+.kpi-lbl{font-size:11px;color:rgba(255,255,255,.6);}
+
+/* ══ MAIN ══ */
+.main{max-width:1300px;margin:0 auto;padding:28px 32px 60px;}
+
+/* ══ SECTION TITLE ══ */
+.sec{display:flex;align-items:center;gap:10px;margin:32px 0 16px;}
+.sec-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sec h3{font-family:'Tajawal',sans-serif;font-size:17px;font-weight:700;color:#0B1D3A;}
+.sec p{font-size:11px;color:#64748B;margin-top:1px;}
+
+/* ══ COMPANY CARDS ══ */
+.cc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;}
+.cc{border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);transition:transform .2s,box-shadow .2s;}
+.cc:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.cc-head{padding:18px 22px;color:white;}
+.cc-head-title{font-family:'Tajawal',sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.cc-body{background:white;padding:18px 22px;}
+.cc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:12px;}
+.cc-row:last-child{border-bottom:none;}
+.cc-key{color:#64748B;}
+.cc-val{font-weight:700;text-align:left;}
+.cc-nats{display:flex;gap:6px;flex-wrap:wrap;}
+.nat-tag{padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;background:#F0F4FF;color:#1A4FA0;}
+.status-dot-g{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;margin-left:5px;}
+.status-dot-r{display:inline-block;width:8px;height:8px;border-radius:50%;background:#EF4444;margin-left:5px;}
+.cc-warn{margin-top:12px;padding:9px 12px;background:#FEF2F2;border-radius:9px;font-size:11px;color:#DC2626;display:flex;gap:7px;align-items:center;border:1px solid #FECACA;}
+.cc-good{margin-top:12px;padding:9px 12px;background:#ECFDF5;border-radius:9px;font-size:11px;color:#059669;display:flex;gap:7px;align-items:center;border:1px solid #A7F3D0;}
+
+/* ══ TABLE ══ */
+.tbl-wrap{background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);overflow:hidden;margin-bottom:24px;}
+.tbl-hd{padding:16px 24px;background:white;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:10px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:#F8FAFF;padding:10px 14px;font-weight:700;color:#0B1D3A;text-align:right;border-bottom:2px solid #E2E8F0;white-space:nowrap;}
+td{padding:10px 14px;border-bottom:1px solid #F8FAFF;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FAFBFF;}
+.tfoot-row td{background:#F8FAFF;font-weight:700;border-top:2px solid #E2E8F0;}
+.tag{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;display:inline-block;}
+.tg{background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;}
+.tr{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;}
+.ty{background:#FFF7ED;color:#D97706;border:1px solid #FED7AA;}
+.tm{background:#F8FAFF;color:#64748B;border:1px solid #E2E8F0;}
+
+/* ══ MAP ══ */
+.map-wrap{background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);overflow:hidden;margin-bottom:24px;}
+.map-hd{padding:16px 24px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;}
+#wmap{height:420px;}
+
+/* ══ IP LOG ══ */
+.ip-wrap{background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);padding:20px 24px;margin-bottom:24px;}
+.ip-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;margin-bottom:7px;border:1px solid;font-size:11px;}
+
+/* ══ TIMELINE ══ */
+.tl-wrap{background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);padding:24px;margin-bottom:24px;}
+.tl-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #F1F5F9;}
+.tl-name{font-family:'Tajawal',sans-serif;font-size:18px;font-weight:800;color:#0B1D3A;}
+.tl-avg-num{font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#1A4FA0;}
+.in-prog{padding:12px 16px;background:linear-gradient(135deg,rgba(26,79,160,.07),rgba(200,150,26,.07));border:1px dashed #C8961A;border-radius:11px;display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;}
+.tl-item{display:flex;gap:0;align-items:flex-start;position:relative;}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;}
+.tl-dot{width:13px;height:13px;border-radius:50%;border:2.5px solid;flex-shrink:0;z-index:1;margin-top:4px;}
+.tl-line{width:2px;flex:1;min-height:22px;background:#E2E8F0;}
+.tl-line-dash{width:2px;flex:1;min-height:22px;background:repeating-linear-gradient(to bottom,#E2E8F0 0,#E2E8F0 5px,transparent 5px,transparent 10px);}
+.tl-cnt{flex:1;padding:0 0 18px 14px;}
+.tl-date{font-size:10px;color:#94A3B8;margin-bottom:3px;}
+.tl-unit{font-size:13px;font-weight:700;color:#0B1D3A;margin-bottom:7px;}
+.tl-bar-out{height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden;flex:1;}
+.tl-bar-in{height:100%;border-radius:4px;}
+.tl-grade{font-size:13px;font-weight:800;min-width:44px;text-align:left;}
+.tl-time{font-size:10px;color:#94A3B8;margin-top:4px;}
+.pending-unit{padding:9px 14px;background:#F8FAFF;border:1px dashed #CBD5E1;border-radius:8px;font-size:11px;color:#94A3B8;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+
+/* ══ GRADES TABLE ══ */
+.gr-wrap{background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);padding:20px 24px;margin-bottom:24px;overflow-x:auto;}
+
+/* ══ STATS ══ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-box{background:white;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:18px 20px;text-align:center;}
+.stat-v{font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;line-height:1;}
+.stat-l{font-size:11px;color:#64748B;margin-top:6px;}
+
+/* ══ OBS ══ */
+.obs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.obs-box{background:white;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:18px 20px;}
+.obs-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.obs-item{font-size:12px;display:flex;gap:8px;margin-bottom:8px;line-height:1.5;}
+
+/* ══ NATIONALITY BARS ══ */
+.nat-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.nb-row{display:flex;align-items:center;gap:10px;}
+.nb-label{font-size:11px;min-width:80px;font-weight:600;}
+.nb-out{flex:1;height:14px;background:#F1F5F9;border-radius:7px;overflow:hidden;}
+.nb-in{height:100%;border-radius:7px;}
+.nb-val{font-size:11px;font-weight:700;min-width:24px;text-align:left;}
+
+/* ══ FOOTER ══ */
+.footer{background:#0B1D3A;color:rgba(255,255,255,.5);text-align:center;padding:18px;font-size:11px;}
+
+/* UPDATE BADGE */
+.update-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#6EE7B7;}
+.update-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+@media(max-width:900px){
+  .cc-grid,.obs-grid{grid-template-columns:1fr;}
+  .kpi-bar{grid-template-columns:repeat(3,1fr);}
+  .main{padding:16px;}
+  .hdr{padding:0 20px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-badges">
+      <span class="hbdg" style="background:rgba(200,150,26,.25);border:1px solid rgba(200,150,26,.5);color:#FCD34D;">
+        ⚡ Learning Analytics
+      </span>
+      <span class="hbdg" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);">
+        🏢 3 شركات
+      </span>
+      <span class="hbdg" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);">
+        📅 2025
+      </span>
+      <span class="update-badge"><span class="update-dot"></span>تحديث مايو 2026</span>
+    </div>
+    <div class="hdr-title-wrap">
+      <div class="hdr-title">تقرير تحليلات التعلم – برنامج تدريب العمالة المنزلية</div>
+      <div class="hdr-sub">شركة تكامل (مساند) · المقدَّم للشركاء من شركات الاستقدام</div>
+    </div>
+    <div class="hdr-ico">🏠</div>
+  </div>
+
+  <!-- KPI BAR -->
+  <div class="kpi-bar">
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#F59E0B">76</div>
+      <div class="kpi-lbl">إجمالي المتدربات</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#4ADE80">20</div>
+      <div class="kpi-lbl">قيد التدريب حالياً</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#60A5FA">2</div>
+      <div class="kpi-lbl">حاصلة على الشهادة</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#F472B6">3</div>
+      <div class="kpi-lbl">شركات استقدام</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#A78BFA">5</div>
+      <div class="kpi-lbl">جنسيات</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-num" style="color:#34D399">4</div>
+      <div class="kpi-lbl">لغات البرنامج</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══ COMPANIES ══ -->
+  <div class="sec">
+    <div class="sec-ico" style="background:#EEF2FF">🏢</div>
+    <div>
+      <h3>توزيع المتدربات حسب شركة الاستقدام</h3>
+      <p>بيانات مُستخرجة من تحليلات التعلم · منصة تكامل (مساند)</p>
+    </div>
+  </div>
+
+  <div class="cc-grid">
+
+    <!-- رواد النخبة -->
+    <div class="cc">
+      <div class="cc-head" style="background:linear-gradient(135deg,#1A4FA0,#2563EB)">
+        <div class="cc-head-title">🏢 رواد النخبة</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-row"><span class="cc-key">إجمالي المتدربات</span><span class="cc-val">25</span></div>
+        <div class="cc-row">
+          <span class="cc-key">الجنسيات</span>
+          <div class="cc-nats">
+            <span class="nat-tag">🇺🇬 UG (5)</span>
+            <span class="nat-tag">🇪🇹 ET (10)</span>
+            <span class="nat-tag">🇰🇪 KE (10)</span>
+          </div>
+        </div>
+        <div class="cc-row">
+          <span class="cc-key">النشطات</span>
+          <span class="cc-val"><span class="status-dot-g"></span>11 نشطة</span>
+        </div>
+        <div class="cc-row">
+          <span class="cc-key">الشهادات</span>
+          <span class="cc-val" style="color:#D97706">✓ 2 شهادة</span>
+        </div>
+        <div class="cc-row">
+          <span class="cc-key">اللغات</span>
+          <div class="cc-nats">
+            <span class="nat-tag" style="background:#ECFDF5;color:#059669">🇬🇧 إنجليزية</span>
+            <span class="nat-tag" style="background:#FFF7ED;color:#D97706">🇪🇹 أرومو أفان</span>
+          </div>
+        </div>
+        <div class="cc-good">✅ الأعلى إنجازاً · حاصلة على شهادة</div>
+      </div>
+    </div>
+
+    <!-- ركن أديم -->
+    <div class="cc">
+      <div class="cc-head" style="background:linear-gradient(135deg,#7C3AED,#9333EA)">
+        <div class="cc-head-title">🏢 ركن أديم للاستقدام</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-row"><span class="cc-key">إجمالي المتدربات</span><span class="cc-val">19</span></div>
+        <div class="cc-row">
+          <span class="cc-key">الجنسيات</span>
+          <div class="cc-nats"><span class="nat-tag">🇱🇰 سيريلانكا (19)</span></div>
+        </div>
+        <div class="cc-row">
+          <span class="cc-key">النشطات</span>
+          <span class="cc-val"><span class="status-dot-r"></span>0 نشطة</span>
+        </div>
+        <div class="cc-row"><span class="cc-key">الشهادات</span><span class="cc-val">— لا يوجد</span></div>
+        <div class="cc-row">
+          <span class="cc-key">اللغات</span>
+          <div class="cc-nats"><span class="nat-tag" style="background:#FDF4FF;color:#7C3AED">🇱🇰 سنهالية</span></div>
+        </div>
+        <div class="cc-warn">⚠️ لا توجد متدربات نشطات — تدخل عاجل مطلوب</div>
+      </div>
+    </div>
+
+    <!-- المعتمد -->
+    <div class="cc">
+      <div class="cc-head" style="background:linear-gradient(135deg,#D97706,#F59E0B)">
+        <div class="cc-head-title">🏢 المعتمد للاستقدام</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-row"><span class="cc-key">إجمالي المتدربات</span><span class="cc-val">32</span></div>
+        <div class="cc-row">
+          <span class="cc-key">الجنسيات</span>
+          <div class="cc-nats">
+            <span class="nat-tag">🇧🇩 BD (10)</span>
+            <span class="nat-tag">🇰🇪 KE (2)</span>
+            <span class="nat-tag">🇺🇬 UG (10)</span>
+            <span class="nat-tag">🇪🇹 أثيوبيا (10)</span>
+          </div>
+        </div>
+        <div class="cc-row">
+          <span class="cc-key">النشطات</span>
+          <span class="cc-val"><span class="status-dot-g"></span>9 نشطة</span>
+        </div>
+        <div class="cc-row"><span class="cc-key">الشهادات</span><span class="cc-val">— لا يوجد</span></div>
+            <span class="nat-tag" style="background:#ECFDF5;color:#059669">🇬🇧 إنجليزية</span>
+            <span class="nat-tag" style="background:#FFF7ED;color:#D97706">🇪🇹 أرومو أفان</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ TABLE ══ -->
+  <div class="tbl-wrap">
+    <div class="tbl-hd">
+      <span style="font-size:18px">📋</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#0B1D3A">جدول توزيع المتدربات الكامل</div>
+        <div style="font-size:11px;color:#64748B">تحديث مايو 2026 · منصة تكامل (مساند)</div>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>شركة الاستقدام</th><th>الجنسية</th><th>عدد المتدربات</th>
+          <th>لغة البرنامج</th><th>النشطات</th><th>الشهادات</th><th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b style="color:#1A4FA0">رواد النخبة</b></td>
+          <td>🇺🇬 أوغندا</td><td><b>5</b></td><td>إنجليزية</td>
+          <td><span class="tag tg">3 نشطة</span></td>
+          <td><span class="tag ty">2 شهادة</span></td>
+          <td><span class="tag tg">منجزة جزئياً</span></td>
+          <td>🇪🇹 أثيوبيا</td><td><b>10</b></td><td>أرومو أفان</td>
+          <td><span class="tag tg">5 نشطة</span></td>
+          <td><span class="tag tr">—</span></td>
+          <td><span class="tag tg">نشطة جزئياً</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#1A4FA0">رواد النخبة</b></td>
+          <td>🇰🇪 كينيا</td><td><b>10</b></td><td>إنجليزية</td>
+          <td><span class="tag tg">3 نشطة</span></td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tg">نشطة</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#7C3AED">ركن أديم</b></td>
+          <td>🇱🇰 سيريلانكا</td><td><b>19</b></td><td>سنهالية</td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">لم تبدأ</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#D97706">المعتمد</b></td>
+          <td>🇧🇩 بنجلاديش</td><td><b>10</b></td><td>بنغالي</td>
+          <td><span class="tag tg">9 نشطة</span></td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tg">نشطة</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#D97706">المعتمد</b></td>
+          <td>🇰🇪 كينيا</td><td><b>2</b></td><td>إنجليزية</td>
+          <td><span class="tag tm">—</span></td>
+          <td><span class="tag tr">—</span></td>
+          <td><span class="tag tm">قيد المتابعة</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#D97706">المعتمد</b></td>
+          <td>🇺🇬 أوغندا</td><td><b>10</b></td><td>إنجليزية</td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">لم تبدأ</span></td>
+        </tr>
+        <tr>
+          <td><b style="color:#D97706">المعتمد</b></td>
+          <td>🇪🇹 أثيوبيا</td><td><b>10</b></td><td>أرومو أفان</td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">0</span></td>
+          <td><span class="tag tr">لم تبدأ</span></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="tfoot-row">
+          <td colspan="2">الإجمالي الكلي</td>
+          <td>76</td><td>4 لغات</td>
+          <td>20 نشطة</td><td>2 شهادة</td><td>—</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ══ NAT DISTRIBUTION ══ -->
+  <div class="sec">
+    <div class="sec-ico" style="background:#EEF2FF">📊</div>
+    <div><h3>توزيع المتدربات حسب الجنسية</h3><p>الإجمالي: 76 متدربة</p></div>
+  </div>
+
+  <div style="background:white;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);padding:22px 28px;margin-bottom:24px;">
+    <div class="nat-bars">
+      <div class="nb-row">
+        <div class="nb-label">🇪🇹 أثيوبيا</div>
+        <div class="nb-out"><div class="nb-in" style="width:26.3%;background:#F59E0B"></div></div>
+        <div class="nb-val" style="color:#F59E0B">20</div>
+      </div>
+      <div class="nb-row">
+        <div class="nb-label">🇱🇰 سيريلانكا</div>
+        <div class="nb-out"><div class="nb-in" style="width:25%;background:#EC4899"></div></div>
+        <div class="nb-val" style="color:#EC4899">19</div>
+      </div>
+      <div class="nb-row">
+        <div class="nb-label">🇺🇬 أوغندا</div>
+        <div class="nb-out"><div class="nb-in" style="width:19.7%;background:#10B981"></div></div>
+        <div class="nb-val" style="color:#10B981">15</div>
+      </div>
+      <div class="nb-row">
+        <div class="nb-label">🇧🇩 بنجلاديش</div>
+        <div class="nb-out"><div class="nb-in" style="width:13.2%;background:#3B82F6"></div></div>
+        <div class="nb-val" style="color:#3B82F6">10</div>
+      </div>
+      <div class="nb-row">
+        <div class="nb-label">🇰🇪 كينيا</div>
+        <div class="nb-out"><div class="nb-in" style="width:15.8%;background:#6366F1"></div></div>
+        <div class="nb-val" style="color:#6366F1">12</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAP ══ -->
+  <div class="sec">
+    <div class="sec-ico" style="background:#ECFDF5">🗺️</div>
+    <div><h3>خريطة الولوج من بلد الاستقدام</h3><p>IP Tracking · دليل سهولة الوصول للبرنامج قبل السفر</p></div>
+  </div>
+
+  <div class="map-wrap">
+    <div class="map-hd">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:16px">🌍</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#0B1D3A">مواقع الدخول للبرنامج التدريبي</div>
+          <div style="font-size:11px;color:#64748B">توثيق جغرافي لمكان الولوج · بيانات فعلية من LMS تكامل</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <span class="tag tg">✅ ولوج خارجي</span>
+        <span class="tag ty">⚠️ IP مشترك</span>
+        <span class="tag tr">🇸🇦 من المملكة</span>
+      </div>
+    </div>
+    <div id="wmap"></div>
+  </div>
+
+  <!-- IP LOG -->
+  <div class="ip-wrap">
+    <div style="font-size:14px;font-weight:700;color:#0B1D3A;margin-bottom:4px">📡 سجل عناوين IP — ولوج من بلد الاستقدام</div>
+    <div style="font-size:11px;color:#64748B;margin-bottom:14px">بيانات فعلية مُستخرجة من منصة تكامل (مساند)</div>
+    <div id="ipLog"></div>
+  </div>
+
+  <!-- ══ COMPARISON: APRIL COMPLETED + MAY IN PROGRESS ══ -->
+  <div class="sec">
+    <div class="sec-ico" style="background:#FFF7ED">⏱️</div>
+    <div>
+      <h3>رحلة المتدربة الزمنية — مقارنة الإنجاز السابق مع الحالي</h3>
+      <p>NABIRYE SHAMIM · أوغندا · أبريل 2026 (مكتملة) vs مايو 2026 (قيد الإنجاز)</p>
+    </div>
+  </div>
+
+  <!-- APRIL — COMPLETED -->
+  <div style="background:linear-gradient(135deg,#0B1D3A 0%,#1A3A6E 100%);border-radius:20px;padding:28px 32px;margin-bottom:12px;overflow:hidden;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div style="font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:white;">
+          🏆 دورة أبريل 2026 — مكتملة بشهادة حضور
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">
+          من 20 أبريل إلى 30 أبريل · 10 أيام كاملة · 9 وحدات · متوسط 84.4%
+        </div>
+      </div>
+      <span style="padding:5px 14px;border-radius:14px;font-size:11px;font-weight:700;background:rgba(16,185,129,.2);color:#6EE7B7;border:1px solid rgba(16,185,129,.4);white-space:nowrap;margin-right:12px;">✅ مكتملة</span>
+    </div>
+
+    <div style="overflow-x:auto;padding:22px 0 8px;">
+      <div style="min-width:960px;position:relative;">
+        <div style="position:absolute;top:36px;right:44px;left:44px;height:3px;background:rgba(16,185,129,.4);border-radius:2px;z-index:0;"></div>
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);position:relative;z-index:2;">
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">20 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م01 التكيف<br>الثقافي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">100%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">13س 16د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">20 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م02 النظافة<br>الشخصية</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">100%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">13س 15د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">22 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م03 التنظيف<br>المنزلي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">83.3%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">11س 17د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">22 أبر</div>
+            <div style="width:24px;height:24px;border-radius:50%;background:#F59E0B;border:3px solid #fff;box-shadow:0 0 0 4px rgba(245,158,11,.35);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م04 الطبخ<br>السعودي</div>
+            <div style="font-size:13px;font-weight:800;color:#F59E0B;margin-top:2px;">90.9%⭐</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">11س 17د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">22 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م05 الأثاث<br>والمفروشات</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">75%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">11س 16د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">23 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م06 التقنيات<br>الحديثة</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">81.8%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">10س 15د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">28 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م07 الرعاية<br>الخاصة</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">71.4%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">5س 17د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">30 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م08 السلامة<br>المهنية</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">71.4%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">3س 19د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">30 أبر</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#EF4444;border:3px solid #fff;box-shadow:0 0 0 4px rgba(239,68,68,.3);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م09 نصائح<br>مهمة</div>
+            <div style="font-size:13px;font-weight:800;color:#EF4444;margin-top:2px;">0%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">3س 19د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:#EC4899;margin-bottom:6px;font-weight:700;">30 أبر</div>
+            <div style="width:24px;height:24px;border-radius:50%;background:#EC4899;border:3px solid #fff;box-shadow:0 0 0 5px rgba(236,72,153,.35);display:flex;align-items:center;justify-content:center;font-size:11px;">🏆</div>
+            <div style="font-size:9px;color:#EC4899;margin-top:7px;text-align:center;line-height:1.4;font-weight:700;">شهادة<br>الحضور</div>
+            <div style="font-size:10px;color:#EC4899;font-weight:800;margin-top:2px;">PM 2:06</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- April bottom stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px;border-top:1px solid rgba(255,255,255,.1);padding-top:18px;">
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:white;">9</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">وحدات مُكملة / متاحة</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#F59E0B;">2</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">وحدات بدرجة 100%</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#10B981;">84.4%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">متوسط الدرجات (8 وحدات)</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#60A5FA;">10</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">أيام إجمالية · 20-30 أبريل</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison arrow -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0;padding:12px 20px;background:white;border-radius:12px;border:1px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#059669;">
+      <span style="width:12px;height:12px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+      أبريل: 9/9 وحدات · 84.4% · شهادة ✅
+    </div>
+    <div style="color:#94A3B8;font-size:18px;">→</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#D97706;">
+      <span style="width:12px;height:12px;border-radius:50%;background:#F59E0B;display:inline-block;"></span>
+      مايو: 5/9 وحدات · 80.9% · قيد الإنجاز ⏳
+    </div>
+    <div style="color:#94A3B8;font-size:18px;">→</div>
+    <div style="font-size:12px;color:#64748B;">التحديث التالي بعد 5 أيام</div>
+  </div>
+
+  <!-- MAY — IN PROGRESS -->
+  <div style="background:linear-gradient(135deg,#1A3A6E 0%,#0B2D5A 100%);border-radius:20px;padding:28px 32px;margin-bottom:24px;overflow:hidden;border:1px dashed rgba(200,150,26,.4);">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div style="font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:white;">
+          ⏳ دورة مايو 2026 — قيد الإنجاز
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">
+          بدأت 4 مايو · 5 وحدات مكتملة · المتوسط الحالي 80.9%
+        </div>
+      </div>
+      <span style="padding:5px 14px;border-radius:14px;font-size:11px;font-weight:700;background:rgba(200,150,26,.2);color:#FCD34D;border:1px solid rgba(200,150,26,.4);white-space:nowrap;margin-right:12px;">⏳ جارية</span>
+    </div>
+
+    <div style="overflow-x:auto;padding:22px 0 8px;">
+      <div style="min-width:960px;position:relative;">
+        <div style="position:absolute;top:36px;right:44px;left:44px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;z-index:0;"></div>
+        <div style="position:absolute;top:36px;right:44px;width:49%;height:3px;background:linear-gradient(to left,#10B981,#3B82F6);border-radius:2px;z-index:1;"></div>
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);position:relative;z-index:2;">
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">4 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م01 التكيف<br>الثقافي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">80%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">5س 34د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">4 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م02 النظافة<br>الشخصية</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">75%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">6س 59د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">5 مايو</div>
+            <div style="width:26px;height:26px;border-radius:50%;background:#F59E0B;border:3px solid #fff;box-shadow:0 0 0 5px rgba(245,158,11,.35);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م03 التنظيف<br>المنزلي</div>
+            <div style="font-size:13px;font-weight:800;color:#F59E0B;margin-top:2px;">91.7%⭐</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">4س 8د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">5 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م04 الطبخ<br>السعودي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">81.8%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">5س 21د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">6 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.7);margin-top:7px;text-align:center;line-height:1.4;">م05 الأثاث<br>والمفروشات</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:2px;">75%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);">6س 45د</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;opacity:.4;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:7px;text-align:center;line-height:1.4;">م06 التقنيات<br>الحديثة</div>
+            <div style="font-size:11px;color:#D97706;margin-top:2px;">⏳</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;opacity:.4;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:7px;text-align:center;line-height:1.4;">م07 الرعاية<br>الخاصة</div>
+            <div style="font-size:11px;color:#D97706;margin-top:2px;">⏳</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;opacity:.4;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:7px;text-align:center;line-height:1.4;">م08 السلامة<br>المهنية</div>
+            <div style="font-size:11px;color:#D97706;margin-top:2px;">⏳</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;opacity:.4;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);"></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:7px;text-align:center;line-height:1.4;">م09 نصائح<br>مهمة</div>
+            <div style="font-size:11px;color:#D97706;margin-top:2px;">⏳</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;opacity:.3;">
+            <div style="font-size:9px;color:rgba(255,255,255,.25);margin-bottom:6px;">—</div>
+            <div style="width:22px;height:22px;border-radius:50%;border:2px dashed rgba(236,72,153,.3);background:rgba(236,72,153,.08);display:flex;align-items:center;justify-content:center;font-size:11px;">🏆</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:7px;text-align:center;line-height:1.4;">شهادة<br>الحضور</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:2px;">قيد الإنجاز</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- May bottom stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px;border-top:1px solid rgba(255,255,255,.1);padding-top:18px;">
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:white;">5</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">وحدات مُكملة / 9</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#F59E0B;">1</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">أعلى درجة 91.7% ⭐</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#10B981;">80.9%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">متوسط الدرجات حتى الآن</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:30px;font-weight:900;color:#60A5FA;">3</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">أيام · 4–6 مايو 2026</div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Section Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div style="font-family:'Tajawal',sans-serif;font-size:18px;font-weight:800;color:white;">
+          🗺️ خريطة الرحلة — 5 وحدات مكتملة من 9
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;">
+          كل نقطة تمثل إتمام وحدة تدريبية · البيانات مُستخرجة من Outline Report · LMS تكامل
+        </div>
+      </div>
+      <span style="padding:5px 14px;border-radius:14px;font-size:11px;font-weight:700;background:rgba(200,150,26,.2);color:#FCD34D;border:1px solid rgba(200,150,26,.4);white-space:nowrap;margin-right:12px;">⏳ قيد الإنجاز</span>
+    </div>
+
+    <!-- Horizontal Timeline -->
+    <div style="overflow-x:auto;padding:28px 0 8px;">
+      <div style="min-width:960px;position:relative;">
+
+        <!-- Base line -->
+        <div style="position:absolute;top:36px;right:44px;left:44px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;z-index:0;"></div>
+        <!-- Progress line 5/10 = 50% -->
+        <div style="position:absolute;top:36px;right:44px;width:49%;height:3px;background:linear-gradient(to left,#10B981,#3B82F6);border-radius:2px;z-index:1;"></div>
+
+        <!-- 10 nodes -->
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);position:relative;z-index:2;">
+
+          <!-- م01 ✅ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">4 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;line-height:1.4;">م01 التكيف<br>الثقافي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:3px;">80%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;">5س 34د</div>
+          </div>
+
+          <!-- م02 ✅ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">4 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;line-height:1.4;">م02 النظافة<br>الشخصية</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:3px;">75%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;">6س 59د</div>
+          </div>
+
+          <!-- م03 ✅ ⭐ أعلى درجة -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">5 مايو</div>
+            <div style="width:26px;height:26px;border-radius:50%;background:#F59E0B;border:3px solid #fff;box-shadow:0 0 0 5px rgba(245,158,11,.35);flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;line-height:1.4;">م03 التنظيف<br>المنزلي</div>
+            <div style="font-size:13px;font-weight:800;color:#F59E0B;margin-top:3px;">91.7%⭐</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;">4س 8د</div>
+          </div>
+
+          <!-- م04 ✅ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">5 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;line-height:1.4;">م04 الطبخ<br>السعودي</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:3px;">81.8%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;">5س 21د</div>
+          </div>
+
+          <!-- م05 ✅ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:9px;color:rgba(255,255,255,.55);margin-bottom:6px;">6 مايو</div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#10B981;border:3px solid #fff;box-shadow:0 0 0 4px rgba(16,185,129,.25);flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;line-height:1.4;">م05 الأثاث<br>والمفروشات</div>
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-top:3px;">75%</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;">6س 45د</div>
+          </div>
+
+          <!-- م06 ⏳ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.45;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2.5px dashed rgba(255,255,255,.3);background:transparent;flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.4);margin-top:8px;text-align:center;line-height:1.4;">م06 التقنيات<br>الحديثة</div>
+            <div style="font-size:12px;font-weight:700;color:#D97706;margin-top:3px;">⏳</div>
+          </div>
+
+          <!-- م07 ⏳ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.45;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2.5px dashed rgba(255,255,255,.3);background:transparent;flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.4);margin-top:8px;text-align:center;line-height:1.4;">م07 الرعاية<br>الخاصة</div>
+            <div style="font-size:12px;font-weight:700;color:#D97706;margin-top:3px;">⏳</div>
+          </div>
+
+          <!-- م08 ⏳ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.45;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2.5px dashed rgba(255,255,255,.3);background:transparent;flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.4);margin-top:8px;text-align:center;line-height:1.4;">م08 السلامة<br>المهنية</div>
+            <div style="font-size:12px;font-weight:700;color:#D97706;margin-top:3px;">⏳</div>
+          </div>
+
+          <!-- م09 ⏳ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.45;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:18px;height:18px;border-radius:50%;border:2.5px dashed rgba(255,255,255,.3);background:transparent;flex-shrink:0;"></div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.4);margin-top:8px;text-align:center;line-height:1.4;">م09 نصائح<br>مهمة</div>
+            <div style="font-size:12px;font-weight:700;color:#D97706;margin-top:3px;">⏳</div>
+          </div>
+
+          <!-- شهادة ⏳ -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.35;">
+            <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:6px;">—</div>
+            <div style="width:22px;height:22px;border-radius:50%;border:2.5px dashed rgba(236,72,153,.4);background:rgba(236,72,153,.1);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🏆</div>
+            <div style="font-size:9.5px;color:rgba(255,255,255,.35);margin-top:8px;text-align:center;line-height:1.4;">شهادة<br>الحضور</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">قيد الإنجاز</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px;border-top:1px solid rgba(255,255,255,.1);padding-top:20px;">
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:32px;font-weight:900;color:white;">5</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">وحدات مُكملة / متاحة</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:32px;font-weight:900;color:#F59E0B;">1</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">وحدة بأعلى درجة 91.7%</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:32px;font-weight:900;color:#10B981;">80.9%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">متوسط الدرجات (5 وحدات)</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Tajawal',sans-serif;font-size:32px;font-weight:900;color:#60A5FA;">3</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;">أيام إجمالية · 4–6 مايو</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ GRADES TABLE ══ -->
+  <div class="gr-wrap">
+    <div style="font-size:14px;font-weight:700;color:#0B1D3A;margin-bottom:4px">📚 درجات الوحدات المكتملة — Outline Report</div>
+    <div style="font-size:11px;color:#64748B;margin-bottom:16px">NABIRYE SHAMIM · أوغندا · رواد النخبة · 5 وحدات مكتملة حتى 6 مايو 2026</div>
+    <table>
+      <thead>
+        <tr><th>م</th><th>اسم الوحدة</th><th>الدرجة</th><th>تاريخ الإكمال</th><th>مدة الجلسة</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01</td><td>Cultural Adaptation and Social Interaction Skills</td>
+          <td><b style="color:#1A4FA0">80.00 / 100</b></td>
+          <td>4 مايو — 11:52 ص</td><td>5 س 34 د</td>
+        </tr>
+        <tr>
+          <td>02</td><td>Practical Skills for Personal Hygiene and Appearance</td>
+          <td><b style="color:#0A7B72">75.00 / 100</b></td>
+          <td>4 مايو — 12:27 م</td><td>6 س 59 د</td>
+        </tr>
+        <tr>
+          <td>03</td><td>Effective Techniques for Home Cleaning</td>
+          <td><b style="color:#16A34A">91.66 / 100 ⭐</b></td>
+          <td>5 مايو — 1:18 م</td><td>4 س 8 د</td>
+        </tr>
+        <tr>
+          <td>04</td><td>Cooking Arts and Preparing Saudi Meals</td>
+          <td><b style="color:#C8961A">81.81 / 100</b></td>
+          <td>5 مايو — 2:05 م</td><td>5 س 21 د</td>
+        </tr>
+        <tr>
+          <td>05</td><td>Skills for Caring for Furniture and Home Furnishings</td>
+          <td><b style="color:#7C3AED">75.00 / 100</b></td>
+          <td>6 مايو — 2:40 م</td><td>6 س 45 د</td>
+        </tr>
+        <tr style="background:#FFF7ED">
+          <td colspan="2" style="color:#D97706;font-weight:700">06 – 09 قيد الإنجاز</td>
+          <td colspan="3" style="color:#D97706">⏳ التحديث التالي بعد 5 أيام</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="tfoot-row">
+          <td colspan="2">متوسط الدرجات الحالي (5 وحدات)</td>
+          <td><b style="color:#1A4FA0">80.9 / 100</b></td>
+          <td>4 – 6 مايو 2026</td><td>~29 ساعة</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ══ STATS ══ -->
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-v" style="color:#1A4FA0">3</div>
+      <div class="stat-l">أيام من بداية التدريب</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-v" style="color:#16A34A">80.9%</div>
+      <div class="stat-l">متوسط 5 وحدات مكتملة</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-v" style="color:#C8961A">91.7</div>
+      <div class="stat-l">أعلى درجة — الوحدة 03</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-v" style="color:#7C3AED">~29 س</div>
+      <div class="stat-l">إجمالي زمن التعلم حتى الآن</div>
+    </div>
+  </div>
+
+  <!-- ══ OBSERVATIONS ══ -->
+  <div class="sec">
+    <div class="sec-ico" style="background:#FFF7ED">💡</div>
+    <div><h3>الملاحظات والتوصيات</h3><p>بناءً على بيانات تحليلات التعلم — مايو 2026</p></div>
+  </div>
+  <div class="obs-grid">
+    <div class="obs-box">
+      <div class="obs-title" style="color:#059669">✅ إيجابيات</div>
+      <div class="obs-item"><span>🟢</span>NABIRYE أنجزت 5 وحدات في 3 أيام — وتيرة تعلم ممتازة</div>
+      <div class="obs-item"><span>🟢</span>الولوج موثق من أوغندا — دليل نجاح البرنامج عن بُعد</div>
+      <div class="obs-item"><span>🟢</span>9 من 10 متدربات بنجلاديش بدأن التدريب فعلياً</div>
+      <div class="obs-item"><span>🟢</span>5 لغات مدعومة — تنوع لغوي ناجح</div>
+      <div class="obs-item"><span>🟢</span>أعلى درجة في الوحدة 03 (91.7%) — تنظيف المنزل</div>
+    </div>
+    <div class="obs-box">
+      <div class="obs-title" style="color:#DC2626">⚠️ نقاط تحتاج متابعة</div>
+      <div class="obs-item"><span>🔴</span>ركن أديم: 19 سيريلانكية غير نشطات — تدخل عاجل</div>
+      <div class="obs-item"><span>🔴</span>مشاركة IP بين متدربات أثيوبيا — يؤثر على دقة التتبع</div>
+      <div class="obs-item"><span>🟡</span>المعتمد: 20 متدربة (أوغندا + أثيوبيا) لم تبدأن بعد</div>
+      <div class="obs-item"><span>🟡</span>NABIRYE: 4 وحدات متبقية — متابعة في التحديث القادم</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  تقرير تحليلات التعلم · برنامج تدريب العمالة المنزلية قبل الاستقدام · منصة تكامل (مساند) · تحديث مايو 2026<br>
+  البيانات مُستخرجة من Outline Report · نظام إدارة التعلم LMS · التحديث التالي بعد 5 أيام
+</div>
+
+<script>
+// MAP
+const wmap=L.map('wmap',{center:[20,60],zoom:3,zoomControl:true,attributionControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:18}).addTo(wmap);
+
+// Saudi Arabia center point
+const KSA = [24.0, 45.0];
+
+const pts=[
+  {lat:0.3,  lng:32.6, name:'أوغندا – كمبالا',      company:'رواد النخبة',         note:'NABIRYE SHAMIM · ولوج موثق ✅',      color:'#1A4FA0', flag:'🇺🇬', active:true},
+  {lat:9.0,  lng:38.7, name:'أثيوبيا – أديس أبابا', company:'رواد النخبة + المعتمد',note:'4 متدربات · مشاركة IP ⚠️',           color:'#F59E0B', flag:'🇪🇹', active:true},
+  {lat:-1.3, lng:36.8, name:'كينيا – نيروبي',        company:'رواد النخبة + المعتمد',note:'12 متدربة',                           color:'#10B981', flag:'🇰🇪', active:true},
+  {lat:23.7, lng:90.4, name:'بنجلاديش – دكا',        company:'المعتمد',              note:'9 متدربات نشطات ✅',                  color:'#C8961A', flag:'🇧🇩', active:true},
+  {lat:7.9,  lng:80.8, name:'سيريلانكا',              company:'ركن أديم',             note:'19 متدربة · غير نشطات ⚠️',           color:'#EC4899', flag:'🇱🇰', active:false},
+  {lat:26.4, lng:50.1, name:'السعودية – القطيف',      company:'المعتمد',              note:'Seada Yesuf · ولوج من المملكة 🇸🇦', color:'#7C3AED', flag:'🇸🇦', active:true},
+];
+
+// Draw connection lines FROM Saudi Arabia TO each country
+pts.forEach(p=>{
+  if(p.name==='السعودية – القطيف') return; // skip KSA itself
+  const lineColor = p.active ? p.color : '#94A3B8';
+  const dashArr   = p.active ? null : '6,6';
+  const opts = {color:lineColor, weight:p.active?2:1.5, opacity:p.active?.75:.4, dashArray:dashArr};
+  L.polyline([KSA,[p.lat,p.lng]], opts).addTo(wmap);
+});
+
+// Saudi Arabia — center marker (larger, pulsing)
+L.circleMarker(KSA,{radius:18,fillColor:'#1A4FA0',fillOpacity:.95,color:'#fff',weight:3}).addTo(wmap)
+ .bindTooltip(`<div style="font-family:'IBM Plex Sans Arabic';direction:rtl;font-size:13px;font-weight:700">🇸🇦 المملكة العربية السعودية<br><span style="font-size:11px;color:#64748B">مركز البرنامج التدريبي · تكامل (مساند)</span></div>`,
+   {direction:'top',permanent:false});
+L.marker([KSA[0]-2.8, KSA[1]],{icon:L.divIcon({className:'',
+  html:`<div style="font-size:11px;font-weight:800;color:#1A4FA0;text-shadow:0 1px 4px rgba(255,255,255,.95);white-space:nowrap">🇸🇦 المملكة العربية السعودية</div>`,
+  iconSize:[160,14],iconAnchor:[80,7]})}).addTo(wmap);
+
+// Country markers
+pts.forEach(p=>{
+  if(p.name==='السعودية – القطيف') return;
+  L.circleMarker([p.lat,p.lng],{radius:13,fillColor:p.color,fillOpacity:.85,color:'#fff',weight:2.5}).addTo(wmap)
+   .bindTooltip(`<div style="font-family:'IBM Plex Sans Arabic';direction:rtl;min-width:180px;padding:4px">
+    <div style="font-size:14px;margin-bottom:5px"><b>${p.flag} ${p.name}</b></div>
+    <div style="font-size:11px;color:#64748B;margin-bottom:4px">${p.company}</div>
+    <div style="font-size:11px;padding:3px 8px;border-radius:5px;background:${p.color}22;color:${p.color};font-weight:700">${p.note}</div>
+   </div>`,{direction:'top',offset:[0,-14]});
+  L.marker([p.lat-2.8,p.lng],{icon:L.divIcon({className:'',
+    html:`<div style="font-size:10px;font-weight:700;color:${p.color};text-shadow:0 1px 3px rgba(255,255,255,.9);white-space:nowrap">${p.flag} ${p.name.split('–')[0].trim()}</div>`,
+    iconSize:[110,14],iconAnchor:[55,7]})}).addTo(wmap);
+});
+
+wmap.fitBounds([[-5,25],[32,100]]);
+
+// IP LOG
+const ipData=[
+  {ip:'105.161.14.187',name:'NABIRYE SHAMIM',loc:'أوغندا',flag:'🇺🇬',co:'رواد النخبة',type:'ok'},
+  {ip:'196.191.223.199',name:'TENBO BAYANA + KARTU IMA',loc:'أديس أبابا – أثيوبيا',flag:'🇪🇹',co:'رواد النخبة',type:'shared'},
+  {ip:'196.189.39.79',name:'ABARAYA MAMESANI + ADEM MUSA',loc:'أديس أبابا – أثيوبيا',flag:'🇪🇹',co:'رواد النخبة',type:'shared'},
+  {ip:'51.223.15.164',name:'Seada Yesuf Mohammed',loc:'القطيف – السعودية',flag:'🇸🇦',co:'المعتمد',type:'ksa'},
+];
+document.getElementById('ipLog').innerHTML=ipData.map(r=>`
+  <div class="ip-row" style="
+    border-color:${r.type==='ok'?'#A7F3D0':r.type==='shared'?'#FDE68A':'#FECACA'};
+    background:${r.type==='ok'?'#ECFDF5':r.type==='shared'?'#FFFBEB':'#FEF2F2'}">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <span style="font-size:18px">${r.flag}</span>
+      <div>
+        <div style="font-weight:700;color:#0B1D3A">${r.name}</div>
+        <div style="color:#64748B;margin-top:1px">📡 ${r.ip} · ${r.loc}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:#64748B">${r.co}</span>
+      <span class="tag ${r.type==='ok'?'tg':r.type==='shared'?'ty':'tr'}">
+        ${r.type==='ok'?'✅ ولوج خارجي':r.type==='shared'?'⚠️ IP مشترك':'🇸🇦 من المملكة'}
+      </span>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>
