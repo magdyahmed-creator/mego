@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خريطة مفاهيم — أفلام العمالة المنزلية</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #f5f6fa; direction: rtl; }
+
+  .page-title {
+    text-align: center;
+    padding: 28px 20px 10px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2340;
+  }
+  .page-sub {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 28px;
+  }
+
+  .map {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px 60px;
+  }
+
+  /* Root node */
+  .root {
+    background: #1a2340;
+    color: #fff;
+    border-radius: 16px;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 16px rgba(26,35,64,0.18);
+  }
+
+  /* Vertical connector from root down */
+  .vline-root {
+    width: 2px;
+    height: 36px;
+    background: #bbb;
+    margin: 0 auto;
+  }
+
+  /* Horizontal line spanning clusters */
+  .hline-wrap {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1280px;
+    position: relative;
+    justify-content: space-between;
+  }
+  .hline {
+    position: absolute;
+    top: 0;
+    right: 6%;
+    left: 6%;
+    height: 2px;
+    background: #bbb;
+  }
+
+  /* Each cluster column */
+  .cluster-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    padding: 0 6px;
+  }
+
+  /* Connector from hline down to cluster box */
+  .vline-cluster {
+    width: 2px;
+    height: 30px;
+    background: #bbb;
+  }
+
+  /* Cluster header box */
+  .cluster-box {
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    width: 100%;
+    max-width: 170px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Film card */
+  .film-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 170px;
+  }
+  .vline-film {
+    width: 2px;
+    height: 18px;
+    background: #ddd;
+  }
+  .film-box {
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* Topics under each film */
+  .topics-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 170px;
+  }
+  .vline-topic {
+    width: 2px;
+    height: 12px;
+    background: #e0e0e0;
+  }
+  .topic-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 10px;
+    color: #444;
+    width: 100%;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .topic-item:last-child { margin-bottom: 0; }
+
+  /* Duration badge */
+  .dur-badge {
+    font-size: 10px;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  /* Summary bar */
+  .summary {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 10px auto 0;
+    max-width: 800px;
+    padding: 16px 20px;
+    background: #1a2340;
+    border-radius: 14px;
+    margin: 20px auto;
+    width: calc(100% - 40px);
+    max-width: 860px;
+  }
+  .sum-item { text-align: center; color: #fff; }
+  .sum-num { font-size: 26px; font-weight: 700; color: #7ecfb3; }
+  .sum-lbl { font-size: 11px; color: #aab; margin-top: 2px; }
+
+  /* COLOR THEMES per cluster */
+  .c1 .cluster-box { background: #1D6FA4; color: #fff; }
+  .c1 .film-box    { background: #E6F3FA; color: #0a4268; border: 1px solid #b3d4ea; }
+  .c1 .dur-badge   { background: #1D6FA4; color: #fff; }
+
+  .c2 .cluster-box { background: #D4700A; color: #fff; }
+  .c2 .film-box    { background: #FEF0E0; color: #7a3a00; border: 1px solid #f5c07a; }
+  .c2 .dur-badge   { background: #D4700A; color: #fff; }
+
+  .c3 .cluster-box { background: #2E8B57; color: #fff; }
+  .c3 .film-box    { background: #E6F5EE; color: #14512d; border: 1px solid #8fd4b0; }
+  .c3 .dur-badge   { background: #2E8B57; color: #fff; }
+
+  .c4 .cluster-box { background: #7B3FA0; color: #fff; }
+  .c4 .film-box    { background: #F3EAF8; color: #4a1a6a; border: 1px solid #c9a0e0; }
+  .c4 .dur-badge   { background: #7B3FA0; color: #fff; }
+
+  .c5 .cluster-box { background: #C0392B; color: #fff; }
+  .c5 .film-box    { background: #FDECEA; color: #7a1208; border: 1px solid #f0a09a; }
+  .c5 .dur-badge   { background: #C0392B; color: #fff; }
+
+  .c6 .cluster-box { background: #2C7873; color: #fff; }
+  .c6 .film-box    { background: #E4F4F3; color: #0e4340; border: 1px solid #7ecece; }
+  .c6 .dur-badge   { background: #2C7873; color: #fff; }
+
+  .c7 .cluster-box { background: #5a6a8a; color: #fff; }
+  .c7 .film-box    { background: #eef0f5; color: #2a3450; border: 1px solid #bbc4d8; }
+  .c7 .dur-badge   { background: #5a6a8a; color: #fff; }
+
+  @media print {
+    body { background: #fff; }
+    .page-title { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">خريطة مفاهيم — مكتبة أفلام العمالة المنزلية</div>
+<div class="page-sub">13 فيلم تدريبي قصير — مهارات العمل داخل المنزل — قبل بدء السيناريوهات</div>
+
+<div class="map">
+
+  <!-- ROOT -->
+  <div class="root">مكتبة أفلام تنمية مهارات العمالة المنزلية</div>
+  <div class="vline-root"></div>
+
+  <!-- HORIZONTAL SPAN + CLUSTERS -->
+  <div class="hline-wrap">
+    <div class="hline"></div>
+
+    <!-- C1: النظافة -->
+    <div class="cluster-col c1">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">النظافة والترتيب</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">١. نظيف ومنظم<br>أدوات التنظيف وكيف تعمل</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">أدوات التنظيف ووظيفة كل منها</div>
+          <div class="topic-item">المواد الكيميائية وما لا يُخلط</div>
+          <div class="topic-item">رموز السلامة على العبوات</div>
+          <div class="topic-item">مشهد قبل وبعد</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">6 د</span>
+        <div class="film-box">٢. كل غرفة بطريقتها<br>التنظيف من الداخل</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">المطبخ vs الحمام vs غرفة النوم</div>
+          <div class="topic-item">تسلسل التنظيف الصحيح</div>
+          <div class="topic-item">الغسيل والكي وطي الملابس</div>
+          <div class="topic-item">ترتيب الخزائن</div>
+          <div class="topic-item">خطأ شائع في كل غرفة</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C2: المطبخ -->
+    <div class="cluster-col c2">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">المطبخ والطعام</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">7 د</span>
+        <div class="film-box">٣. المطبخ السعودي<br>الأساسيات</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">أشهر 8 أطباق سعودية</div>
+          <div class="topic-item">التوابل ووظيفة كل منها</div>
+          <div class="topic-item">قراءة الوصفة</div>
+          <div class="topic-item">كيف تسألي صاحبة البيت</div>
+          <div class="topic-item">الطبق قبل وبعد التدريب</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">4 د</span>
+        <div class="film-box">٤. المطبخ الآمن<br>نظافة الغذاء والسلامة</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">درجات حرارة التخزين</div>
+          <div class="topic-item">تاريخ الصلاحية</div>
+          <div class="topic-item">الفصل بين اللحم والخضار</div>
+          <div class="topic-item">غسل الأيدي قبل الطعام</div>
+          <div class="topic-item">الإبلاغ عن طعام فاسد</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C3: الأطفال -->
+    <div class="cluster-col c3">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">رعاية الأطفال</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">6 د</span>
+        <div class="film-box">٥. عناية بالأطفال<br>كل مرحلة بطريقتها</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الرضيع — الطفل الصغير — ما قبل المدرسة</div>
+          <div class="topic-item">احتياجات كل مرحلة</div>
+          <div class="topic-item">كيف تُهدّئي الطفل الباكي</div>
+          <div class="topic-item">اللعب الآمن</div>
+          <div class="topic-item">متى تتصلي بالأم فوراً</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">٦. الطفل مريض<br>ماذا تفعلين؟</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">قياس الحرارة</div>
+          <div class="topic-item">الجرح البسيط والحروق</div>
+          <div class="topic-item">الابتلاع الخاطئ</div>
+          <div class="topic-item">متى هو طارئ</div>
+          <div class="topic-item">أرقام الطوارئ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C4: كبار السن -->
+    <div class="cluster-col c4">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">رعاية كبار السن</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">٧. مع كبير السن<br>الاحترام والرعاية</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">المساعدة في التنقل والحمام</div>
+          <div class="topic-item">تناول الدواء في مواعيده</div>
+          <div class="topic-item">التواصل مع من لا يتكلم بوضوح</div>
+          <div class="topic-item">لا تقرري بدلاً عنه</div>
+          <div class="topic-item">متى تطلبي المساعدة</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C5: البيت الحديث -->
+    <div class="cluster-col c5">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">البيت الحديث<br>تكنولوجيا + سلامة + طوارئ</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">٨. الأجهزة المنزلية<br>تشغيل وأمان</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الغسالة، الفرن، الميكروويف</div>
+          <div class="topic-item">التكييف، المكنسة الكهربائية</div>
+          <div class="topic-item">رموز السلامة على الأجهزة</div>
+          <div class="topic-item">رائحة احتراق — أوقفي وأبلّغي</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">٩. المنزل الذكي<br>لا تخافي منه</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الإنترنت والواي فاي</div>
+          <div class="topic-item">الكاميرات وأين توجد</div>
+          <div class="topic-item">التحكم الصوتي (أليكسا)</div>
+          <div class="topic-item">الأقفال الذكية</div>
+          <div class="topic-item">ما تلمسينه وما لا تلمسينه</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">6 د</span>
+        <div class="film-box">١٠. الإسعافات الأولية<br>كوني الأولى في المشهد</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الجرح والكدمة والحروق</div>
+          <div class="topic-item">الاختناق وفقدان الوعي</div>
+          <div class="topic-item">السقوط</div>
+          <div class="topic-item">صندوق الإسعاف ومحتوياته</div>
+          <div class="topic-item">متى تتصرفي ومتى تتصلي</div>
+        </div>
+      </div>
+
+      <div class="film-wrap" style="margin-top:14px">
+        <div class="vline-film"></div>
+        <span class="dur-badge">5 د</span>
+        <div class="film-box">١١. الطوارئ والأمان<br>تصرفي بثقة</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الحريق — طفاية الحريق</div>
+          <div class="topic-item">تسرب الغاز — أوقفي وافتحي واخرجي</div>
+          <div class="topic-item">شخص غريب على الباب</div>
+          <div class="topic-item">أرقام الطوارئ: 911 — 920 — 937</div>
+          <div class="topic-item">بطاقة معلومات البيت</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C6: الثقافة -->
+    <div class="cluster-col c6">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">الثقافة السعودية</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">6 د</span>
+        <div class="film-box">١٢. البيت السعودي<br>من الداخل</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">الصلاة ومواقيتها</div>
+          <div class="topic-item">استقبال الضيوف ودور العاملة</div>
+          <div class="topic-item">اللباس المناسب داخل المنزل</div>
+          <div class="topic-item">المحارم وغير المحارم</div>
+          <div class="topic-item">مخاطبة أفراد الأسرة</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C7: إدارة الوقت -->
+    <div class="cluster-col c7">
+      <div class="vline-cluster"></div>
+      <div class="cluster-box">إدارة يوم العمل</div>
+
+      <div class="film-wrap">
+        <div class="vline-film"></div>
+        <span class="dur-badge">6 د</span>
+        <div class="film-box">١٣. يوم عمل كامل<br>كيف تُديرين وقتك</div>
+        <div class="topics-wrap">
+          <div class="vline-topic"></div>
+          <div class="topic-item">من الفجر حتى المساء</div>
+          <div class="topic-item">تحديد الأولويات</div>
+          <div class="topic-item">طلبان في وقت واحد — ماذا تفعلين؟</div>
+          <div class="topic-item">كيف تطلبي استراحة باحترام</div>
+          <div class="topic-item">نهاية اليوم وتسليم المهام</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end hline-wrap -->
+
+</div><!-- end map -->
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="sum-item"><div class="sum-num">13</div><div class="sum-lbl">فيلم تدريبي</div></div>
+  <div class="sum-item"><div class="sum-num">7</div><div class="sum-lbl">تجمعات موضوعية</div></div>
+  <div class="sum-item"><div class="sum-num">68</div><div class="sum-lbl">دقيقة إجمالية</div></div>
+  <div class="sum-item"><div class="sum-num">60+</div><div class="sum-lbl">موضوع فرعي</div></div>
+</div>
+
+</body>
+</html>
