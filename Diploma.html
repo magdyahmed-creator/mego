@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الاستشراف المهني | أكاديمية التدريب النوعي</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2c5282;
+            --accent: #d4af37;
+            --accent-light: #f0d878;
+            --urgent: #dc2626;
+            --high: #ea580c;
+            --medium: #ca8a04;
+            --low: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo-img {
+            height: 60px;
+            width: auto;
+            filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-sub { font-size: 0.85rem; opacity: 0.8; font-weight: 400; }
+        .badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .header-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .header-title span { color: var(--accent-light); }
+        .header-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-bottom: 1.5rem;
+        }
+        .header-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .meta-item i { color: var(--accent); }
+        .nav-tabs {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: var(--text-light);
+            background: none;
+            border: none;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .nav-tab:hover { color: var(--primary); background: rgba(30,58,95,0.05); }
+        .nav-tab.active { color: var(--primary); border-bottom-color: var(--accent); background: rgba(30,58,95,0.05); }
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+        .kpi-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+        }
+        .kpi-change.positive {
+            background: rgba(34,197,94,0.1);
+            color: #16a34a;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        .filter-bar {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .programs-container {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .programs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .programs-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .programs-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .programs-table tr:hover { background: rgba(30,58,95,0.03); }
+        .programs-table tr:last-child td { border-bottom: none; }
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .priority-badge i { font-size: 0.6rem; }
+        .program-name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        .demand-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.3rem;
+        }
+        .demand-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .salary-tag {
+            background: rgba(212,175,55,0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .evidence-text {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            max-width: 300px;
+            line-height: 1.4;
+        }
+        .level-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(30,58,95,0.1);
+            color: var(--primary);
+        }
+        .hours-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(212,175,55,0.15);
+            color: var(--primary);
+        }
+        .academy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        .academy-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .academy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .academy-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .academy-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+        }
+        .academy-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .academy-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .academy-stat {
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--bg);
+            border-radius: 8px;
+            flex: 1;
+        }
+        .academy-stat-value {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .academy-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+        .academy-programs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .academy-program-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        .academy-program-name { font-weight: 600; }
+        .academy-program-priority {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .roadmap {
+            position: relative;
+            padding-right: 2rem;
+        }
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--urgent), var(--high), var(--medium));
+            border-radius: 3px;
+        }
+        .roadmap-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-right: 2rem;
+        }
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 0.5rem;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 3px solid var(--urgent);
+            box-shadow: 0 0 0 4px rgba(220,38,38,0.2);
+        }
+        .roadmap-item.phase-2::before {
+            border-color: var(--high);
+            box-shadow: 0 0 0 4px rgba(234,88,12,0.2);
+        }
+        .roadmap-item.phase-3::before {
+            border-color: var(--medium);
+            box-shadow: 0 0 0 4px rgba(202,138,4,0.2);
+        }
+        .roadmap-phase {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .roadmap-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .roadmap-programs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .roadmap-program {
+            background: var(--bg);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .footer-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .footer-text {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .footer-date {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            .header-title { font-size: 1.8rem; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .programs-table { display: block; overflow-x: auto; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .count-up { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="logo">
+                    <img src="data:image/png;base64,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" alt="أكاديمية التدريب النوعي" class="logo-img">
+                    <div>
+                        <div class="logo-text">أكاديمية التدريب النوعي</div>
+                        <div class="logo-sub">Qualitative Training Academy</div>
+                    </div>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-chart-line"></i> دراسة استشرافية 2026-2027
+                </div>
+            </div>
+            <h1 class="header-title">
+                منصة <span>الاستشراف المهني</span><br>
+                لبرامج الدبلومات التطبيقية
+            </h1>
+            <p class="header-desc">
+                دراسة تحليلية موضوعية لـ 33 برنامج دبلوم مقترح، مبنية على مؤشرات سوق العمل السعودي، 
+                وتقارير صندوق النقد الدولي، ورؤية المملكة 2030
+            </p>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <i class="fas fa-database"></i>
+                    <span>33 برنامج دبلوم</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-building"></i>
+                    <span>6 أكاديميات متخصصة</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-globe"></i>
+                    <span>تغطية 6 قطاعات استراتيجية</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>تحديث مايو 2026</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <div class="nav-content">
+            <button class="nav-tab active" onclick="showSection('overview')">
+                <i class="fas fa-chart-pie"></i> النظرة الشاملة
+            </button>
+            <button class="nav-tab" onclick="showSection('programs')">
+                <i class="fas fa-list-alt"></i> البرامج والأولويات
+            </button>
+            <button class="nav-tab" onclick="showSection('academies')">
+                <i class="fas fa-university"></i> الأكاديميات
+            </button>
+            <button class="nav-tab" onclick="showSection('roadmap')">
+                <i class="fas fa-road"></i> خارطة التنفيذ
+            </button>
+            <button class="nav-tab" onclick="showSection('analysis')">
+                <i class="fas fa-microscope"></i> التحليل العميق
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(220,38,38,0.1); color: var(--urgent);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="kpi-value count-up" id="urgent-count">0</div>
+                    <div class="kpi-label">برنامج أولوية قصوى</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> الطلب يتجاوز العرض 9%
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(234,88,12,0.1); color: var(--high);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="kpi-value count-up" id="high-count">0</div>
+                    <div class="kpi-label">برنامج أولوية عالية</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-check"></i> متوافق مع رؤية 2030
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(202,138,4,0.1); color: var(--medium);">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="kpi-value count-up" id="medium-count">0</div>
+                    <div class="kpi-label">برنامج أولوية متوسطة</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-info-circle"></i> يحتاج دراسة تفصيلية
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(100,116,139,0.1); color: var(--low);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="kpi-value count-up" id="low-count">0</div>
+                    <div class="kpi-label">برنامج أولوية منخفضة</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-exclamation-triangle"></i> تحديات في السعودة
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(30,58,95,0.1); color: var(--primary);">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="kpi-value count-up" id="avg-demand">0</div>
+                    <div class="kpi-label">متوسط درجة الطلب (من 10)</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-chart-line"></i> أعلى من المعدل العام
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(212,175,55,0.1); color: var(--accent);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="kpi-value">38K</div>
+                    <div class="kpi-label">أعلى راتب متوقع (ريال)</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> في الذكاء الاصطناعي
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">توزيع الأولويات حسب الأكاديمية</div>
+                            <div class="chart-subtitle">عدد البرامج في كل فئة أولوية</div>
+                        </div>
+                        <i class="fas fa-chart-bar" style="color: var(--accent);"></i>
+                    </div>
+                    <canvas id="priorityChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">درجة الطلب في السوق</div>
+                            <div class="chart-subtitle">توزيع البرامج حسب درجة الاحتياج (1-10)</div>
+                        </div>
+                        <i class="fas fa-chart-area" style="color: var(--accent);"></i>
+                    </div>
+                    <canvas id="demandChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">الاندماج الاستراتيجي</div>
+                            <div class="chart-subtitle">رؤية 2030 مقابل السعودة</div>
+                        </div>
+                        <i class="fas fa-bullseye" style="color: var(--accent);"></i>
+                    </div>
+                    <canvas id="scatterChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">متوسط الرواتب المتوقعة</div>
+                            <div class="chart-subtitle">أعلى 10 برامج (ريال سعودي)</div>
+                        </div>
+                        <i class="fas fa-coins" style="color: var(--accent);"></i>
+                    </div>
+                    <canvas id="salaryChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programs Section -->
+        <section id="programs" class="section">
+            <div class="filter-bar">
+                <span class="filter-label"><i class="fas fa-filter"></i> تصفية حسب:</span>
+                <button class="filter-btn active" onclick="filterPrograms('all')">الكل</button>
+                <button class="filter-btn" onclick="filterPrograms('أولوية قصوى')">أولوية قصوى</button>
+                <button class="filter-btn" onclick="filterPrograms('أولوية عالية')">أولوية عالية</button>
+                <button class="filter-btn" onclick="filterPrograms('أولوية متوسطة')">أولوية متوسطة</button>
+                <button class="filter-btn" onclick="filterPrograms('أولوية منخفضة')">أولوية منخفضة</button>
+                <button class="filter-btn" onclick="filterPrograms('AI & Engineering')">الذكاء الاصطناعي</button>
+                <button class="filter-btn" onclick="filterPrograms('Management')">الإدارة</button>
+                <button class="filter-btn" onclick="filterPrograms('Finance')">المالية</button>
+                <button class="filter-btn" onclick="filterPrograms('Legal')">القانون</button>
+                <button class="filter-btn" onclick="filterPrograms('Media')">الإعلام</button>
+                <button class="filter-btn" onclick="filterPrograms('Health')">الصحة</button>
+            </div>
+
+            <div class="programs-container">
+                <table class="programs-table">
+                    <thead>
+                        <tr>
+                            <th>الأولوية</th>
+                            <th>البرنامج</th>
+                            <th>الأكاديمية</th>
+                            <th>المستوى</th>
+                            <th>الساعات</th>
+                            <th>الطلب</th>
+                            <th>الراتب المتوقع</th>
+                            <th>الدليل السوقي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programs-body">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Academies Section -->
+        <section id="academies" class="section">
+            <div class="academy-grid" id="academy-grid">
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="section">
+            <div style="background: var(--card); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 2rem;">
+                    <i class="fas fa-road" style="color: var(--accent); margin-left: 0.5rem;"></i>
+                    خارطة التنفيذ الاستراتيجية
+                </h2>
+                <div class="roadmap">
+                    <div class="roadmap-item">
+                        <div class="roadmap-phase" style="background: rgba(220,38,38,0.1); color: var(--urgent);">
+                            المرحلة الأولى: الإطلاق الفوري
+                        </div>
+                        <div class="roadmap-title">6 برامج أولوية قصوى</div>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            برامج يتجاوز فيها الطلب العرض بنسبة 9% وفقاً لصندوق النقد الدولي. 
+                            الرواتب تبدأ من 15,000 وتصل إلى 38,000 ريال.
+                        </p>
+                        <div class="roadmap-programs">
+                            <span class="roadmap-program">الذكاء الاصطناعي وتحليل البيانات</span>
+                            <span class="roadmap-program">الذكاء الاصطناعي التوليدي</span>
+                            <span class="roadmap-program">الحوسبة السحابية</span>
+                            <span class="roadmap-program">التحول الرقمي</span>
+                            <span class="roadmap-program">إدارة سلاسل الإمداد</span>
+                            <span class="roadmap-program">إدارة الموارد البشرية</span>
+                        </div>
+                    </div>
+
+                    <div class="roadmap-item phase-2">
+                        <div class="roadmap-phase" style="background: rgba(234,88,12,0.1); color: var(--high);">
+                            المرحلة الثانية: التوسع الموجه (بعد 6 أشهر)
+                        </div>
+                        <div class="roadmap-title">11 برنامج أولوية عالية</div>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            برامج متوافقة مع رؤية 2030، تغطي احتياجات قطاعات ناشئة ومستدامة.
+                        </p>
+                        <div class="roadmap-programs">
+                            <span class="roadmap-program">إنترنت الأشياء</span>
+                            <span class="roadmap-program">إدارة قواعد البيانات</span>
+                            <span class="roadmap-program">الروبوتات والأتمتة</span>
+                            <span class="roadmap-program">الحوكمة والالتزام</span>
+                            <span class="roadmap-program">القيادة التنفيذية</span>
+                            <span class="roadmap-program">الامتثال المالي</span>
+                            <span class="roadmap-program">التحليل المالي</span>
+                            <span class="roadmap-program">إدارة المشتريات</span>
+                            <span class="roadmap-program">العقود الحكومية</span>
+                            <span class="roadmap-program">الإعلام الرقمي</span>
+                            <span class="roadmap-program">الترميز الطبي</span>
+                        </div>
+                    </div>
+
+                    <div class="roadmap-item phase-3">
+                        <div class="roadmap-phase" style="background: rgba(202,138,4,0.1); color: var(--medium);">
+                            المرحلة الثالثة: التخصص الدقيق (بعد 12 شهراً)
+                        </div>
+                        <div class="roadmap-title">16 برنامج أولوية متوسطة ومنخفضة</div>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            برامج تكميلية حسب الطلب المحلي والتخصصات الناشئة. 
+                            تتطلب دراسة ميدانية في المنطقة المستهدفة.
+                        </p>
+                        <div class="roadmap-programs">
+                            <span class="roadmap-program">المراجعة الداخلية</span>
+                            <span class="roadmap-program">إدارة المنشآت الصحية</span>
+                            <span class="roadmap-program">التأمين وإدارة المخاطر</span>
+                            <span class="roadmap-program">الملكية الفكرية</span>
+                            <span class="roadmap-program">إدارة المنصات الاجتماعية</span>
+                            <span class="roadmap-program">الصحة والسلامة المهنية</span>
+                            <span class="roadmap-program">إدارة المخاطر المهنية</span>
+                            <span class="roadmap-program">إدارة الكوارث والأزمات</span>
+                            <span class="roadmap-program">الدراسات القانونية</span>
+                            <span class="roadmap-program">المرافعات الشرعية</span>
+                            <span class="roadmap-program">المحاماة ومهارات التقاضي</span>
+                            <span class="roadmap-program">التحقيق الجنائي</span>
+                            <span class="roadmap-program">التصميم الجرافيكي</span>
+                            <span class="roadmap-program">اللغة الإنجليزية</span>
+                            <span class="roadmap-program">السكرتارية والإدارة المكتبية</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Section -->
+        <section id="analysis" class="section">
+            <div class="charts-grid">
+                <div class="chart-card" style="grid-column: 1 / -1;">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">مؤشرات السوق السعودي الرئيسية</div>
+                            <div class="chart-subtitle">البيانات المستندة إلى تقارير موثقة 2026</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(220,38,38,0.05) 0%, rgba(220,38,38,0.1) 100%); border-radius: 12px; border-right: 4px solid var(--urgent);">
+                            <div style="font-size: 2rem; font-weight: 900; color: var(--urgent);">9%</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">فجوة STEM</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">الطلب يتجاوز العرض في العلوم التقنية وفقاً لصندوق النقد الدولي</div>
+                        </div>
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(234,88,12,0.05) 0%, rgba(234,88,12,0.1) 100%); border-radius: 12px; border-right: 4px solid var(--high);">
+                            <div style="font-size: 2rem; font-weight: 900; color: var(--high);">340K</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">وظيفة مستهدفة</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">برنامج نطاقات المتطور 2026-2028 في القطاع الخاص</div>
+                        </div>
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(30,58,95,0.05) 0%, rgba(30,58,95,0.1) 100%); border-radius: 12px; border-right: 4px solid var(--primary);">
+                            <div style="font-size: 2rem; font-weight: 900; color: var(--primary);">62B</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">مليار ريال خسارة</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">الخسائر السنوية بسبب عدم توافق المهارات مع سوق العمل</div>
+                        </div>
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.1) 100%); border-radius: 12px; border-right: 4px solid var(--accent);">
+                            <div style="font-size: 2rem; font-weight: 900; color: var(--accent);">100K</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">أخصائي IT مطلوب</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">استثمار 3.2 مليار دولار في البنية التحتية الرقمية</div>
+                        </div>
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.1) 100%); border-radius: 12px; border-right: 4px solid #10b981;">
+                            <div style="font-size: 2rem; font-weight: 900; color: #10b981;">7.2%</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">معدل البطالة</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">انخفاض مستمر نحو هدف الرؤية 5% بحلول 2030</div>
+                        </div>
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(139,92,246,0.05) 0%, rgba(139,92,246,0.1) 100%); border-radius: 12px; border-right: 4px solid #8b5cf6;">
+                            <div style="font-size: 2rem; font-weight: 900; color: #8b5cf6;">36.3%</div>
+                            <div style="font-weight: 700; color: var(--primary); margin-top: 0.5rem;">مشاركة المرأة</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">ارتفاع من 17% عام 2017 نحو التوازن المهني</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--card); border-radius: 16px; padding: 2rem; margin-top: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                <h3 style="font-size: 1.3rem; font-weight: 900; color: var(--primary); margin-bottom: 1.5rem;">
+                    <i class="fas fa-file-alt" style="color: var(--accent); margin-left: 0.5rem;"></i>
+                    المصادر والمراجع الموثقة
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">صندوق النقد الدولي (IMF)</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Structural Reforms in Saudi Arabia - Labor Markets and Skills Mismatch 2026</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">مؤشر QS للمهارات المستقبلية</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">QS World Future Skills Index: Saudi Arabia 2025</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">برنامج نطاقات المتطور</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Nitaqat Advanced Program 2026-2028 - 340,000 Jobs Target</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">صندوق تنمية الموارد البشرية (هدف)</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">HRDF Leadership Development and Training Priorities 2026</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">تقرير بيرسون 2025</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Fixing Saudi Arabia's SAR 62 Billion Skills Gap</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                        <div style="font-weight: 700; color: var(--primary);">MarketsandMarkets 2026</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Saudi Arabia AI in Supply Chain Market - 26.1% CAGR</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-graduation-cap"></i> أكاديمية التدريب النوعي
+            </div>
+            <div class="footer-text">
+                دراسة استشرافية موضوعية لبرامج الدبلومات التطبيقية - مبنية على مؤشرات سوق العمل السعودي 2026-2027
+            </div>
+            <div class="footer-date">
+                <i class="fas fa-calendar"></i> إعداد: إدارة التدريب الإلكتروني | تحديث: مايو 2026
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Programs Data
+        const programs = [{"id": 1, "name": "الذكاء الاصطناعي وتحليل البيانات", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 9.5, "saudization": "عالي جداً", "vision2030": "عالي جداً", "salary": "20000-35000", "evidence": "IMF: STEM demand exceeds supply by 9%; AI market growing 26.1% CAGR", "priority": "أولوية قصوى"}, {"id": 2, "name": "الحوسبة السحابية", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 9.0, "saudization": "عالي جداً", "vision2030": "عالي جداً", "salary": "18000-30000", "evidence": "Vision 2030: $3.2B digital infrastructure investment; 100K IT specialists needed", "priority": "أولوية قصوى"}, {"id": 3, "name": "إنترنت الأشياء", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 8.5, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-25000", "evidence": "NEOM smart cities; IoT market expanding rapidly", "priority": "أولوية عالية"}, {"id": 4, "name": "الروبوتات والأتمتة", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-28000", "evidence": "Industrial automation; Vision 2030 manufacturing targets", "priority": "أولوية عالية"}, {"id": 5, "name": "إدارة قواعد البيانات", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 8.5, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-25000", "evidence": "Digital transformation requires database specialists", "priority": "أولوية عالية"}, {"id": 6, "name": "التحول الرقمي", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 30, "demand": 9.0, "saudization": "عالي جداً", "vision2030": "عالي جداً", "salary": "18000-30000", "evidence": "97% government services digitized; $3.2B allocated for digital transformation", "priority": "أولوية قصوى"}, {"id": 7, "name": "الصحة والسلامة المهنية", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "مشارك", "hours": 24, "demand": 7.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "8000-15000", "evidence": "NEBOSH/IOSH certifications; construction sector demand", "priority": "أولوية متوسطة"}, {"id": 8, "name": "الذكاء الاصطناعي التوليدي", "academy": "أكاديمية الذكاء الاصطناعي والهندسة", "academy_en": "AI & Engineering", "level": "متوسط", "hours": 60, "demand": 9.5, "saudization": "عالي جداً", "vision2030": "عالي جداً", "salary": "20000-38000", "evidence": "GenAI revolution; LLMs and image generation tools in high demand", "priority": "أولوية قصوى"}, {"id": 9, "name": "الحوكمة والالتزام وإدارة المخاطر", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 24, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "12000-22000", "evidence": "Corporate governance requirements increasing; GOSI compliance", "priority": "أولوية عالية"}, {"id": 10, "name": "المراجعة الداخلية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 24, "demand": 7.5, "saudization": "عالي", "vision2030": "عالي", "salary": "12000-20000", "evidence": "Internal audit critical for financial compliance", "priority": "أولوية متوسطة"}, {"id": 11, "name": "السكرتارية والإدارة المكتبية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 30, "demand": 6.0, "saudization": "عالي", "vision2030": "متوسط", "salary": "8000-12000", "evidence": "Administrative roles being Saudized; lower priority", "priority": "أولوية منخفضة"}, {"id": 12, "name": "القيادة التنفيذية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 30, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-28000", "evidence": "Leadership development is HRDF Hadaf priority", "priority": "أولوية عالية"}, {"id": 13, "name": "إدارة المخاطر المهنية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 30, "demand": 7.0, "saudization": "متوسط", "vision2030": "متوسط", "salary": "10000-18000", "evidence": "Risk management across sectors", "priority": "أولوية منخفضة"}, {"id": 14, "name": "إدارة المنشآت الصحية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "مشارك", "hours": 30, "demand": 7.5, "saudization": "عالي", "vision2030": "عالي", "salary": "12000-20000", "evidence": "Healthcare expansion; 175K worker gap", "priority": "أولوية متوسطة"}, {"id": 15, "name": "إدارة الموارد البشرية", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "متوسط", "hours": 60, "demand": 8.5, "saudization": "عالي جداً", "vision2030": "عالي", "salary": "15000-25000", "evidence": "HR roles Saudized at high rates; strategic HR needed", "priority": "أولوية عالية"}, {"id": 16, "name": "إدارة سلاسل الإمداد واللوجستيات", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "متوسط", "hours": 60, "demand": 9.0, "saudization": "عالي جداً", "vision2030": "عالي جداً", "salary": "15000-28000", "evidence": "Supply chain AI growing 26.1% CAGR; logistics critical for Vision 2030", "priority": "أولوية قصوى"}, {"id": 17, "name": "إدارة الكوارث والأزمات", "academy": "أكاديمية الإدارة والقيادة", "academy_en": "Management", "level": "متوسط", "hours": 60, "demand": 7.0, "saudization": "متوسط", "vision2030": "متوسط", "salary": "12000-20000", "evidence": "Crisis management needed but niche market", "priority": "أولوية منخفضة"}, {"id": 18, "name": "الامتثال المالي ومكافحة غسل الأموال", "academy": "أكاديمية المالية والاستثمار", "academy_en": "Finance", "level": "متوسط", "hours": 60, "demand": 8.5, "saudization": "عالي", "vision2030": "عالي", "salary": "18000-30000", "evidence": "Financial compliance and AML critical for banking sector", "priority": "أولوية عالية"}, {"id": 19, "name": "التحليل المالي والاستثمار", "academy": "أكاديمية المالية والاستثمار", "academy_en": "Finance", "level": "متوسط", "hours": 60, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-25000", "evidence": "Financial analysis aligned with investment growth", "priority": "أولوية عالية"}, {"id": 20, "name": "التأمين وإدارة المخاطر", "academy": "أكاديمية المالية والاستثمار", "academy_en": "Finance", "level": "متوسط", "hours": 60, "demand": 7.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "12000-20000", "evidence": "Insurance sector growing but specialized", "priority": "أولوية متوسطة"}, {"id": 21, "name": "إدارة المشتريات والعقود", "academy": "أكاديمية المالية والاستثمار", "academy_en": "Finance", "level": "متوسط", "hours": 60, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-25000", "evidence": "Procurement roles Saudized; strategic sourcing needed", "priority": "أولوية عالية"}, {"id": 22, "name": "الدراسات القانونية", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 7.0, "saudization": "متوسط", "vision2030": "متوسط", "salary": "12000-20000", "evidence": "Legal sector steady but competitive", "priority": "أولوية منخفضة"}, {"id": 23, "name": "المرافعات الشرعية", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 6.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "10000-18000", "evidence": "Sharia litigation specialized but limited demand", "priority": "أولوية منخفضة"}, {"id": 24, "name": "المحاماة ومهارات التقاضي", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 7.0, "saudization": "متوسط", "vision2030": "متوسط", "salary": "12000-20000", "evidence": "Legal assistant roles being Saudized", "priority": "أولوية منخفضة"}, {"id": 25, "name": "التحقيق الجنائي", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 6.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "10000-18000", "evidence": "Criminal investigation niche but stable", "priority": "أولوية منخفضة"}, {"id": 26, "name": "الملكية الفكرية", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 7.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "15000-25000", "evidence": "IP protection growing with innovation economy", "priority": "أولوية متوسطة"}, {"id": 27, "name": "العقود والمشتريات الحكومية", "academy": "أكاديمية القانون والحوكمة", "academy_en": "Legal", "level": "متوسط", "hours": 60, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "15000-25000", "evidence": "Government contracts require specialized legal knowledge", "priority": "أولوية عالية"}, {"id": 28, "name": "الإعلام الرقمي وصناعة المحتوى", "academy": "أكاديمية الإعلام والاتصال", "academy_en": "Media", "level": "متوسط", "hours": 60, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "12000-20000", "evidence": "Digital media growing; content creation in demand", "priority": "أولوية عالية"}, {"id": 29, "name": "إدارة المنصات الاجتماعية", "academy": "أكاديمية الإعلام والاتصال", "academy_en": "Media", "level": "متوسط", "hours": 60, "demand": 7.5, "saudization": "عالي", "vision2030": "عالي", "salary": "10000-18000", "evidence": "Social media management critical for businesses", "priority": "أولوية متوسطة"}, {"id": 30, "name": "التصميم الجرافيكي والموشن", "academy": "أكاديمية الإعلام والاتصال", "academy_en": "Media", "level": "متوسط", "hours": 60, "demand": 7.0, "saudization": "عالي", "vision2030": "عالي", "salary": "10000-18000", "evidence": "Graphic design Saudized at 60%; competitive market", "priority": "أولوية منخفضة"}, {"id": 31, "name": "اللغة الإنجليزية", "academy": "أكاديمية الإعلام والاتصال", "academy_en": "Media", "level": "متوسط", "hours": 60, "demand": 6.0, "saudization": "منخفض", "vision2030": "منخفض", "salary": "8000-15000", "evidence": "English language baseline skill; lower diploma value", "priority": "أولوية منخفضة"}, {"id": 32, "name": "الصحة والسلامة المهنية", "academy": "أكاديمية الصحة والسلامة", "academy_en": "Health", "level": "مشارك", "hours": 24, "demand": 7.5, "saudization": "متوسط", "vision2030": "متوسط", "salary": "8000-15000", "evidence": "Safety certifications required across industries", "priority": "أولوية متوسطة"}, {"id": 33, "name": "الترميز الطبي", "academy": "أكاديمية الصحة والسلامة", "academy_en": "Health", "level": "مشارك", "hours": 24, "demand": 8.0, "saudization": "عالي", "vision2030": "عالي", "salary": "10000-18000", "evidence": "Medical coding critical for healthcare billing; 175K gap", "priority": "أولوية عالية"}];
+
+        // Stats
+        const stats = {
+            urgent: 5,
+            high: 12,
+            medium: 7,
+            low: 9,
+            avg: 7.8
+        };
+
+        // Count up animation
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Initialize counters
+        window.addEventListener('load', () => {
+            animateValue('urgent-count', 0, stats.urgent, 1500);
+            animateValue('high-count', 0, stats.high, 1500);
+            animateValue('medium-count', 0, stats.medium, 1500);
+            animateValue('low-count', 0, stats.low, 1500);
+            animateValue('avg-demand', 0, stats.avg, 1500);
+        });
+
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.closest('.nav-tab').classList.add('active');
+        }
+
+        // Priority colors
+        const priorityColors = {
+            'أولوية قصوى': '#dc2626',
+            'أولوية عالية': '#ea580c',
+            'أولوية متوسطة': '#ca8a04',
+            'أولوية منخفضة': '#64748b'
+        };
+
+        // Render programs table
+        function renderPrograms(filter = 'all') {
+            const tbody = document.getElementById('programs-body');
+            let filtered = programs;
+
+            if (filter !== 'all') {
+                if (['أولوية قصوى', 'أولوية عالية', 'أولوية متوسطة', 'أولوية منخفضة'].includes(filter)) {
+                    filtered = programs.filter(p => p.priority === filter);
+                } else {
+                    filtered = programs.filter(p => p.academy_en === filter);
+                }
+            }
+
+            // Sort by priority then demand
+            const priorityOrder = {'أولوية قصوى': 0, 'أولوية عالية': 1, 'أولوية متوسطة': 2, 'أولوية منخفضة': 3};
+            filtered.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority] || b.demand - a.demand);
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td>
+                        <span class="priority-badge" style="background: ${priorityColors[p.priority]}15; color: ${priorityColors[p.priority]};">
+                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                            ${p.priority}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="program-name">${p.name}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; font-size: 0.9rem;">${p.academy}</div>
+                    </td>
+                    <td><span class="level-badge">${p.level}</span></td>
+                    <td><span class="hours-badge">${p.hours} س</span></td>
+                    <td>
+                        <div style="font-weight: 700; color: var(--primary);">${p.demand}/10</div>
+                        <div class="demand-bar">
+                            <div class="demand-fill" style="width: ${p.demand * 10}%; background: ${priorityColors[p.priority]};"></div>
+                        </div>
+                    </td>
+                    <td><span class="salary-tag">${p.salary}</span></td>
+                    <td><div class="evidence-text">${p.evidence}</div></td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter programs
+        function filterPrograms(filter) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderPrograms(filter);
+        }
+
+        // Render academies
+        function renderAcademies() {
+            const academies = {};
+            programs.forEach(p => {
+                if (!academies[p.academy_en]) {
+                    academies[p.academy_en] = { name: p.academy, programs: [] };
+                }
+                academies[p.academy_en].programs.push(p);
+            });
+
+            const icons = {
+                'AI & Engineering': 'fa-robot',
+                'Management': 'fa-users-cog',
+                'Finance': 'fa-chart-line',
+                'Legal': 'fa-balance-scale',
+                'Media': 'fa-broadcast-tower',
+                'Health': 'fa-heartbeat'
+            };
+
+            const colors = {
+                'AI & Engineering': '#1e3a5f',
+                'Management': '#2c5282',
+                'Finance': '#d4af37',
+                'Legal': '#744210',
+                'Media': '#553c9a',
+                'Health': '#065f46'
+            };
+
+            const grid = document.getElementById('academy-grid');
+            grid.innerHTML = Object.entries(academies).map(([key, academy]) => {
+                const urgent = academy.programs.filter(p => p.priority === 'أولوية قصوى').length;
+                const high = academy.programs.filter(p => p.priority === 'أولوية عالية').length;
+                const avgDemand = (academy.programs.reduce((a, b) => a + b.demand, 0) / academy.programs.length).toFixed(1);
+
+                return `
+                <div class="academy-card">
+                    <div class="academy-header">
+                        <div class="academy-icon" style="background: ${colors[key]};">
+                            <i class="fas ${icons[key]}"></i>
+                        </div>
+                        <div class="academy-title">${academy.name}</div>
+                    </div>
+                    <div class="academy-stats">
+                        <div class="academy-stat">
+                            <div class="academy-stat-value">${academy.programs.length}</div>
+                            <div class="academy-stat-label">برنامج</div>
+                        </div>
+                        <div class="academy-stat">
+                            <div class="academy-stat-value" style="color: var(--urgent);">${urgent}</div>
+                            <div class="academy-stat-label">أولوية قصوى</div>
+                        </div>
+                        <div class="academy-stat">
+                            <div class="academy-stat-value" style="color: var(--high);">${high}</div>
+                            <div class="academy-stat-label">أولوية عالية</div>
+                        </div>
+                        <div class="academy-stat">
+                            <div class="academy-stat-value">${avgDemand}</div>
+                            <div class="academy-stat-label">متوسط الطلب</div>
+                        </div>
+                    </div>
+                    <div class="academy-programs">
+                        ${academy.programs.sort((a,b) => b.demand - a.demand).map(p => `
+                            <div class="academy-program-item">
+                                <span class="academy-program-name">${p.name}</span>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 0.8rem; color: var(--text-light);">${p.demand}/10</span>
+                                    <div class="academy-program-priority" style="background: ${priorityColors[p.priority]};"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Charts
+        function initCharts() {
+            // Priority by Academy Chart
+            const academyPriority = {};
+            programs.forEach(p => {
+                if (!academyPriority[p.academy]) academyPriority[p.academy] = {'أولوية قصوى': 0, 'أولوية عالية': 0, 'أولوية متوسطة': 0, 'أولوية منخفضة': 0};
+                academyPriority[p.academy][p.priority]++;
+            });
+
+            const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+            new Chart(priorityCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(academyPriority),
+                    datasets: [
+                        { label: 'أولوية قصوى', data: Object.values(academyPriority).map(a => a['أولوية قصوى']), backgroundColor: '#dc2626' },
+                        { label: 'أولوية عالية', data: Object.values(academyPriority).map(a => a['أولوية عالية']), backgroundColor: '#ea580c' },
+                        { label: 'أولوية متوسطة', data: Object.values(academyPriority).map(a => a['أولوية متوسطة']), backgroundColor: '#ca8a04' },
+                        { label: 'أولوية منخفضة', data: Object.values(academyPriority).map(a => a['أولوية منخفضة']), backgroundColor: '#64748b' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Tajawal' } } }
+                    },
+                    scales: {
+                        x: { stacked: true, ticks: { font: { family: 'Tajawal' } } },
+                        y: { stacked: true, ticks: { font: { family: 'Tajawal' } } }
+                    }
+                }
+            });
+
+            // Demand Distribution Chart
+            const demandRanges = {'9-10': 0, '8-9': 0, '7-8': 0, '6-7': 0, '5-6': 0};
+            programs.forEach(p => {
+                if (p.demand >= 9) demandRanges['9-10']++;
+                else if (p.demand >= 8) demandRanges['8-9']++;
+                else if (p.demand >= 7) demandRanges['7-8']++;
+                else if (p.demand >= 6) demandRanges['6-7']++;
+                else demandRanges['5-6']++;
+            });
+
+            const demandCtx = document.getElementById('demandChart').getContext('2d');
+            new Chart(demandCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(demandRanges),
+                    datasets: [{
+                        data: Object.values(demandRanges),
+                        backgroundColor: ['#dc2626', '#ea580c', '#ca8a04', '#64748b', '#94a3b8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { family: 'Tajawal' } } }
+                    }
+                }
+            });
+
+            // Scatter Chart
+            const visionMap = {'عالي جداً': 4, 'عالي': 3, 'متوسط': 2, 'منخفض': 1};
+            const saudMap = {'عالي جداً': 4, 'عالي': 3, 'متوسط': 2, 'منخفض': 1};
+
+            const scatterCtx = document.getElementById('scatterChart').getContext('2d');
+            new Chart(scatterCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: programs.map(p => ({
+                        label: p.name,
+                        data: [{ x: visionMap[p.vision2030], y: saudMap[p.saudization], r: p.demand * 2 }],
+                        backgroundColor: priorityColors[p.priority] + '80',
+                        borderColor: priorityColors[p.priority],
+                        borderWidth: 2
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': طلب ' + (context.raw.r / 2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'اندماج رؤية 2030', font: { family: 'Tajawal' } },
+                            ticks: { stepSize: 1, callback: v => ['منخفض', 'متوسط', 'عالي', 'عالي جداً'][v-1], font: { family: 'Tajawal' } },
+                            min: 0.5, max: 4.5
+                        },
+                        y: { 
+                            title: { display: true, text: 'اندماج السعودة', font: { family: 'Tajawal' } },
+                            ticks: { stepSize: 1, callback: v => ['منخفض', 'متوسط', 'عالي', 'عالي جداً'][v-1], font: { family: 'Tajawal' } },
+                            min: 0.5, max: 4.5
+                        }
+                    }
+                }
+            });
+
+            // Salary Chart
+            const topPrograms = [...programs].sort((a, b) => {
+                const avgA = a.salary.split('-').map(s => parseInt(s.replace(/,/g, ''))).reduce((x,y) => x+y) / 2;
+                const avgB = b.salary.split('-').map(s => parseInt(s.replace(/,/g, ''))).reduce((x,y) => x+y) / 2;
+                return avgB - avgA;
+            }).slice(0, 10);
+
+            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+            new Chart(salaryCtx, {
+                type: 'bar',
+                data: {
+                    labels: topPrograms.map(p => p.name.length > 15 ? p.name.substring(0, 15) + '...' : p.name),
+                    datasets: [{
+                        label: 'متوسط الراتب',
+                        data: topPrograms.map(p => {
+                            const parts = p.salary.split('-').map(s => parseInt(s.replace(/,/g, '')));
+                            return (parts[0] + parts[1]) / 2;
+                        }),
+                        backgroundColor: topPrograms.map(p => priorityColors[p.priority]),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { ticks: { font: { family: 'Tajawal' } } },
+                        y: { ticks: { font: { family: 'Tajawal' } } }
+                    }
+                }
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPrograms();
+            renderAcademies();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
