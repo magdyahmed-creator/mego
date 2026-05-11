@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تقرير تحليلات التعلم — مايو 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+:root { --primary: #0d4a3a; --primary-light: #1a7a5e; --accent: #d4a843; --bg: #f0f4f1; --card-bg: #ffffff; --text: #1a1a2e; --text-light: #5a6c7d; --border: #e1e8ed; --shadow: 0 8px 32px rgba(13,74,58,0.08); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1300px; margin: 0 auto; padding: 20px; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: var(--card-bg); border-radius: 16px; margin-bottom: 25px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 15px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.3s; font-family: 'Tajawal', sans-serif; }
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+.btn-accent { background: linear-gradient(135deg, var(--accent), #b8942a); color: #1a1a1a; }
+.hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, #0a3d2e 100%); color: white; padding: 60px 40px; border-radius: 24px; margin-bottom: 40px; text-align: center; position: relative; overflow: hidden; }
+.hero h1 { font-size: 2.4rem; font-weight: 900; margin-bottom: 12px; }
+.hero-subtitle { font-size: 1.15rem; opacity: 0.85; margin-bottom: 30px; }
+.hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 30px; }
+.hero-stat { text-align: center; padding: 15px 25px; background: rgba(255,255,255,0.08); border-radius: 16px; }
+.hero-stat-number { font-size: 2rem; font-weight: 800; color: var(--accent); }
+.kpi-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 40px; }
+.kpi-card { background: var(--card-bg); border-radius: 20px; padding: 30px 24px; box-shadow: var(--shadow); transition: all 0.4s; }
+.kpi-card:hover { transform: translateY(-8px); }
+.kpi-value { font-size: 2.6rem; font-weight: 900; color: var(--text); }
+.kpi-label { font-size: 0.95rem; color: var(--text-light); }
+.section { background: var(--card-bg); border-radius: 24px; padding: 35px; margin-bottom: 35px; box-shadow: var(--shadow); }
+.section-title { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+.map-container { height: 500px; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border: 3px solid var(--border); }
+.ip-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 25px; }
+.ip-card { background: linear-gradient(135deg, var(--bg), #ffffff); border-radius: 16px; padding: 20px; border: 2px solid var(--border); }
+.ip-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ip-flag { width: 40px; height: 28px; border-radius: 6px; object-fit: cover; }
+.ip-country { font-weight: 800; }
+.table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.data-table thead { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+.data-table th { padding: 14px; text-align: right; font-weight: 700; }
+.data-table td { padding: 14px; border-bottom: 1px solid var(--border); }
+.footer { text-align: center; padding: 40px 20px; color: white; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 24px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="top-bar">
+    <div style="font-weight:800; color:var(--primary); font-size:1.1rem;">📊 تقرير تحليلات التعلم · مايو 2026</div>
+    <div style="display:flex; gap:12px;">
+      <button class="btn btn-primary" onclick="alert('جاري التصدير...')">📄 تصدير PDF</button>
+      <button class="btn btn-accent" onclick="window.open('mailto:?subject=تقرير تحليلات التعلم')">📧 إرسال بالبريد</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(212,168,67,0.2); border:1px solid rgba(212,168,67,0.4); color:#f0d78c; padding:8px 20px; border-radius:30px; margin-bottom:20px;">
+      📊 تقرير تحليلات التعلم — تحديث مايو 2026
+    </div>
+    <h1>برنامج المهارات الشاملة<br>للعاملة المنزلية</h1>
+    <div class="hero-subtitle">تقرير تحليلي تفاعلي لمتابعة أداء المتدربات عبر شركات الاستقدام الشريكة</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-number">111</div><div style="font-size:0.85rem; opacity:0.8;">متدربة إجمالي</div></div>
+      <div class="hero-stat"><div class="hero-stat-number">3</div><div style="font-size:0.85rem; opacity:0.8;">شركات شريكة</div></div>
+      <div class="hero-stat"><div class="hero-stat-number">5</div><div style="font-size:0.85rem; opacity:0.8;">لغات تدريبية</div></div>
+      <div class="hero-stat"><div class="hero-stat-number">4</div><div style="font-size:0.85rem; opacity:0.8;">جنسيات</div></div>
+    </div>
+  </div>
+
+  <div class="kpi-section">
+    <div class="kpi-card"><div class="kpi-value">111</div><div class="kpi-label">إجمالي المتدربات</div></div>
+    <div class="kpi-card"><div class="kpi-value">34</div><div class="kpi-label">المُفعل دخولهن (30.6%)</div></div>
+    <div class="kpi-card"><div class="kpi-value">13</div><div class="kpi-label">النشطات حالياً (11.7%)</div></div>
+    <div class="kpi-card"><div class="kpi-value">5</div><div class="kpi-label">الشهادات الصادرة (4.5%)</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:#c0392b;">77</div><div class="kpi-label">لم يُفعل دخولهن (69.4%)</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <div style="width:44px; height:44px; background:linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.3rem;">🗺️</div>
+      خريطة الولوج الجغرافي — توثيق IP من بلد الاستقدام
+    </div>
+    <div style="font-size:0.95rem; color:var(--text-light); margin-bottom:20px; text-align:center;">
+      📡 بيانات فعلية مُستخرجة من منصة تكامل (مساند) · تتبع جغرافي لمواقع الدخول
+    </div>
+    <div id="map" class="map-container"></div>
+    <div class="ip-list">
+      <div class="ip-card">
+        <div class="ip-header">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Flag_of_Uganda.svg/1200px-Flag_of_Uganda.svg.png" class="ip-flag">
+          <div class="ip-country">🇺🇬 أوغندا — كمبالا</div>
+        </div>
+        <div style="font-size:0.9rem; color:var(--text-light); line-height:1.8;">
+          <strong>الاسم:</strong> NABIRYE SHAMIM<br>
+          <strong>IP:</strong> 105.161.14.187<br>
+          <strong>الشركة:</strong> رواد النخبة<br>
+          <strong>الحالة:</strong> ✅ مكتملة بشهادة (84.4%)
+        </div>
+      </div>
+      <div class="ip-card">
+        <div class="ip-header">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Flag_of_Ethiopia.svg/1200px-Flag_of_Ethiopia.svg.png" class="ip-flag">
+          <div class="ip-country">🇪🇹 أثيوبيا — أديس أبابا</div>
+        </div>
+        <div style="font-size:0.9rem; color:var(--text-light); line-height:1.8;">
+          <strong>الأسماء:</strong> TENBO BAYANA + KARTU IMA<br>
+          <strong>IP:</strong> 196.191.223.199<br>
+          <strong>الشركة:</strong> رواد النخبة<br>
+          <strong>الحالة:</strong> ⚠️ IP مشترك — متوقفة
+        </div>
+      </div>
+      <div class="ip-card">
+        <div class="ip-header">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Flag_of_Saudi_Arabia.svg/1200px-Flag_of_Saudi_Arabia.svg.png" class="ip-flag">
+          <div class="ip-country">🇸🇦 السعودية — القطيف</div>
+        </div>
+        <div style="font-size:0.9rem; color:var(--text-light); line-height:1.8;">
+          <strong>الاسم:</strong> Seada Yesuf Mohammed<br>
+          <strong>IP:</strong> 51.223.15.164<br>
+          <strong>الشركة:</strong> المعتمد<br>
+          <strong>الحالة:</strong> 📍 داخل المملكة
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <div style="width:44px; height:44px; background:linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.3rem;">📋</div>
+      الجدول التفصيلي — بيانات مايو 2026
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>الشركة</th><th>الجنسية</th><th>اللغة</th><th>العدد</th><th>مُفعل</th><th>نشط</th><th>الوحدات</th><th>شهادات</th><th>التقييم</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="5">المعتمد</td><td>🇪🇹 أثيوبيا</td><td>أروموافان</td><td>9</td><td>6</td><td>0</td><td>—</td><td>0</td><td>⚠️ توقف</td></tr>
+          <tr><td>🇪🇹 أثيوبيا</td><td>أمهرية</td><td>1</td><td>1</td><td>0</td><td>—</td><td>0</td><td>⚠️ توقف</td></tr>
+          <tr style="background:#f0f9f4;"><td>🇺🇬 أوغندا</td><td>إنجليزية</td><td>10</td><td>5</td><td>5</td><td>3</td><td>2</td><td>⭐ ممتاز</td></tr>
+          <tr><td>🇰🇪 كينيا</td><td>إنجليزية</td><td>2</td><td>2</td><td>0</td><td>—</td><td>0</td><td>⚠️ توقف</td></tr>
+          <tr style="background:#f0f9f4;"><td>🇧🇩 بنجلاديش</td><td>بنغالية</td><td>10</td><td>6</td><td>3</td><td>4-5-6</td><td>1</td><td>✓ جيد</td></tr>
+          <tr><td rowspan="3">رواد النخبة</td><td>🇺🇬 أوغندا</td><td>إنجليزية</td><td>5</td><td>5</td><td>5</td><td>4-5-6</td><td>2</td><td>⭐ ممتاز</td></tr>
+          <tr><td>🇰🇪 كينيا</td><td>إنجليزية</td><td>10</td><td>2</td><td>0</td><td>—</td><td>0</td><td>⚠️ ضعيف</td></tr>
+          <tr><td>🇪🇹 أثيوبيا</td><td>أرومو أفان</td><td>10</td><td>5</td><td>0</td><td>—</td><td>0</td><td>⚠️ توقف</td></tr>
+          <tr><td rowspan="2">ركن أديم</td><td>🇱🇰 سيريلانكا</td><td>السنهالية</td><td>19</td><td>2</td><td>0</td><td>—</td><td>0</td><td>🔴 حرج</td></tr>
+          <tr style="background:#fff5f5;"><td>🇧🇩 بنجلاديش</td><td>بنغالي</td><td>35</td><td>0</td><td>0</td><td>—</td><td>0</td><td>🔴 لم تبدأ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div style="font-size:1.2rem; font-weight:800; color:var(--accent); margin-bottom:10px;">⚡ منصة تكامل (مساند)</div>
+    <p>تقرير تحليلات التعلم — برنامج تدريب العمالة المنزلية قبل الاستقدام</p>
+    <p>📊 البيانات مُستخرجة من LMS · تحديث مايو 2026</p>
+    <p style="margin-top:15px; font-size:0.85rem; opacity:0.7;">إعداد: د. مجدي سالم · Director of E-Training · Qualitative Training Academy · Riyadh</p>
+  </div>
+
+</div>
+
+<script>
+const map = L.map('map').setView([10, 20], 3);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+
+const locations = [
+  { coords: [0.3476, 32.5825], color: '#f39c12', name: '🇺🇬 أوغندا — كمبالا', info: 'NABIRYE SHAMIM<br>IP: 105.161.14.187<br>✅ مكتملة' },
+  { coords: [9.145, 40.4897], color: '#27ae60', name: '🇪🇹 أثيوبيا — أديس أبابا', info: 'TENBO BAYANA + KARTU IMA<br>IP: 196.191.223.199<br>⚠️ متوقفة' },
+  { coords: [26.3927, 50.0916], color: '#1a5f4a', name: '🇸🇦 السعودية — القطيف', info: 'Seada Yesuf Mohammed<br>IP: 51.223.15.164<br>📍 داخل المملكة' },
+  { coords: [23.8103, 90.4125], color: '#3498db', name: '🇧🇩 بنجلاديش — دكا', info: '6 متدربات مُفعل<br>🟢 3 نشطات' },
+  { coords: [-1.2921, 36.8219], color: '#e74c3c', name: '🇰🇪 كينيا — نيروبي', info: '2 متدربة مُفعل<br>⚠️ غير نشطة' }
+];
+
+locations.forEach(loc => {
+  L.circleMarker(loc.coords, { radius: 12, fillColor: loc.color, color: '#fff', weight: 3, fillOpacity: 0.8 })
+    .addTo(map).bindPopup('<b>' + loc.name + '</b><br>' + loc.info);
+});
+</script>
+
+</body>
+</html>
