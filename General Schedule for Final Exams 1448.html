@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الجدول العام للاختبارات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#16324F; --ink:#1B2533; --muted:#6B7685; --line:#C7D0DB; --gold:#B08D3C; --bg:#E9EDF2; }
+* { box-sizing:border-box; margin:0; padding:0; }
+html { direction:rtl; }
+body { background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans Arabic", Arial, sans-serif;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:24px 16px; }
+.toolbar { max-width:297mm; margin:0 auto 12px; display:flex; justify-content:flex-start; gap:8px; }
+.toolbar button { font:inherit; font-size:14px; font-weight:700; background:var(--navy); color:#fff; border:0;
+  border-radius:6px; padding:8px 18px; cursor:pointer; }
+.toolbar button:hover { background:#0E2238; }
+.sheet { width:297mm; min-height:210mm; margin:0 auto; background:#fff; padding:7mm 8mm 6mm;
+  box-shadow:0 6px 28px rgba(22,50,79,.16); height:210mm; overflow:hidden; }
+.inner { display:flex; flex-direction:column; gap:2.2mm; min-height:100%; }
+header.top { background:var(--navy); color:#fff; text-align:center; padding:3mm 4mm 2.6mm;
+  border-bottom:1.4mm solid var(--gold); }
+header.top .inst { color:var(--gold); font-weight:700; font-size:11px; }
+header.top h1 { font-size:22px; font-weight:700; line-height:1.35; }
+header.top p { font-size:10.5px; color:#D9E2EC; }
+header.top p i { color:var(--gold); font-style:normal; padding:0 10px; }
+.kpis { display:grid; grid-template-columns:repeat(8,1fr); gap:1.4mm; }
+.kpi { background:#F4F6F9; border-top:3px solid var(--k); text-align:center; padding:1.2mm 1mm 1mm; }
+.kpi b { display:block; color:var(--k); font-size:19px; line-height:1.15; }
+.kpi span { font-size:8.5px; color:var(--muted); font-weight:700; }
+table { width:100%; border-collapse:collapse; table-layout:fixed; }
+col.cday { width:5.6%; } col.cdate { width:9.4%; }
+.dip td, .dip th { border:1px solid var(--line); text-align:center; vertical-align:middle; padding:1mm .8mm; }
+.band { background:var(--acc); color:#fff; text-align:right !important; padding:1.1mm 3mm !important;
+  border-color:var(--acc) !important; }
+.band .bt { font-weight:700; font-size:13px; }
+.band .bp { font-size:10px; margin-right:24px; opacity:.95; }
+.band .bp b { font-size:11.5px; direction:rtl; unicode-bidi:isolate; }
+tr.hd th { background:var(--tint); color:var(--acc); font-size:11px; font-weight:700; border-bottom:2px solid var(--acc);
+  line-height:1.25; }
+tr.hd th small { display:block; color:var(--muted); font-size:8px; font-weight:400; }
+tbody tr:nth-child(even) { background:#FAFBFC; }
+th.day { color:var(--navy); font-size:11.5px; font-weight:700; }
+td.date b { display:block; font-size:9.5px; }
+td.date span { display:block; font-size:8.5px; color:var(--muted); }
+td .n { display:block; font-weight:700; font-size:10px; line-height:1.3; }
+td .c { display:block; font-size:8.5px; color:var(--muted); line-height:1.25; }
+td .t { display:block; font-size:8.5px; font-weight:700; color:var(--gold); line-height:1.3; }
+td .sep { display:block; width:60%; margin:.8mm auto; border-top:1px dashed #9AA5B1; }
+td.empty { color:#C2C8D0; font-size:11px; }
+.bottom { display:grid; grid-template-columns:1fr 61%; gap:3mm; align-items:stretch; }
+.panel { background:#F7F8FA; border:1px solid var(--line); border-top:3px solid var(--gold); padding:2mm 3mm;
+  display:flex; flex-direction:column; justify-content:space-between; }
+.panel h3 { font-size:11.5px; color:var(--navy); margin-bottom:1mm; }
+.panel ul { list-style:none; font-size:9px; line-height:1.55; }
+.panel li { position:relative; padding-right:14px; margin-bottom:.6mm; }
+.panel li::before { content:"●"; position:absolute; right:0; color:var(--gold); font-size:8px; }
+.panel li.clock::before { content:"◷"; font-size:10px; }
+.sigs { display:grid; grid-template-columns:1fr 1fr; gap:4mm; border-top:1px solid var(--line); margin-top:2mm; padding-top:2mm;
+  text-align:center; }
+.sigs .r { font-size:9px; color:var(--muted); font-weight:700; }
+.sigs .nm { font-size:13px; color:var(--navy); font-weight:700; margin:.6mm 0 1.6mm; }
+.sigs .ln { font-size:8.5px; color:var(--muted); }
+footer { text-align:center; font-size:8px; color:var(--muted); margin-top:auto; }
+@page { size:A4 landscape; margin:0; }
+@media print {
+  body { background:#fff; padding:0; }
+  .toolbar { display:none; }
+  .sheet { box-shadow:none; margin:0; width:297mm; height:210mm; overflow:hidden; }
+}
+@media screen and (max-width:1160px) {
+  .sheet { width:297mm; }
+  body { overflow-x:auto; }
+  .toolbar { max-width:100%; }
+}
+</style>
+</head>
+<body>
+<div class="toolbar"><button type="button" onclick="window.print()">طباعة / حفظ PDF</button></div>
+<main class="sheet"><div class="inner">
+<header class="top">
+  <div class="inst">معهد أكاديمية التدريب النوعي العالي للتدريب</div>
+  <h1>الجدول العام للاختبارات النهائية لبرامج الدبلومات</h1>
+  <p>الجزء الأول — العام التدريبي 1448هـ / 1449هـ<i>◆</i>من الأحد 7 جمادى الأولى إلى الأربعاء 10 جمادى الأولى 1448هـ  |  الموافق 18 – 21 أكتوبر 2026م</p>
+</header>
+<div class="kpis"><div class="kpi" style="--k:var(--navy)"><b>4</b><span>أيام الاختبارات</span></div><div class="kpi" style="--k:var(--navy)"><b>60</b><span>إجمالي الاختبارات</span></div><div class="kpi" style="--k:var(--navy)"><b>3</b><span>الدبلومات</span></div><div class="kpi" style="--k:var(--navy)"><b>26</b><span>الشعب التدريبية</span></div><div class="kpi" style="--k:#1F6F8B"><b>25</b><span>اختبارات الموارد البشرية</span></div><div class="kpi" style="--k:#A85A1B"><b>27</b><span>اختبارات السلامة والصحة المهنية</span></div><div class="kpi" style="--k:#5B3F8C"><b>8</b><span>اختبارات الذكاء الاصطناعي</span></div><div class="kpi" style="--k:var(--gold)"><b>7</b><span>اختبارات بتوقيت مختلف</span></div></div>
+<section class="dip" style="--acc:#1F6F8B;--tint:#E4F0F5">
+<table><colgroup><col class="cday"><col class="cdate"><col><col><col><col><col><col><col></colgroup>
+<thead><tr><td class="band" colspan="9"><span class="bt">دبلوم التقنية الإدارية — تخصص إدارة الموارد البشرية</span>
+<span class="bp">الفترة الاعتيادية للاختبار: <b>4:15 – 6:15 م</b></span></td></tr>
+<tr class="hd"><th>اليوم</th><th>التاريخ</th><th>المستوى الأول<small>الشعبة: A</small></th><th>المستوى الثاني<small>الشعبة: A</small></th><th>المستوى الثالث<small>الشعب: A · B</small></th><th>المستوى الرابع<small>الشعب: A · B</small></th><th>المستوى الخامس<small>الشعب: A · B</small></th><th>المستوى السادس<small>الشعب: A · B · C · D</small></th><th>المستوى السابع<small>الشعب: A · B</small></th></tr></thead>
+<tbody><tr><th class="day">الأحد</th><td class="date"><b>7 جمادى الأولى 1448هـ</b><span>18 أكتوبر 2026م</span></td><td><span class="n">الرياضيات</span><span class="c">101 رياض</span></td><td><span class="n">مبادئ إدارة الموارد البشرية</span><span class="c">101 بشري</span></td><td><span class="n">مبادئ المحاسبة</span><span class="c">101 محسب</span></td><td><span class="n">مقدمة في الإحصاء</span><span class="c">101 إحصا</span></td><td><span class="n">إدارة الأداء</span><span class="c">230 بشري</span></td><td><span class="n">لغة إنجليزية (3)</span><span class="c">113 انجل</span></td><td><span class="n">السلوك الوظيفي ومهارات الاتصال</span><span class="c">101 اسلك</span></td></tr><tr><th class="day">الاثنين</th><td class="date"><b>8 جمادى الأولى 1448هـ</b><span>19 أكتوبر 2026م</span></td><td><span class="n">لغة إنجليزية (1)</span><span class="c">111 انجل</span></td><td><span class="n">مقدمة تطبيقات الحاسب</span><span class="c">101 حاسب</span></td><td><span class="n">لغة إنجليزية (2)</span><span class="c">112 انجل</span></td><td><span class="n">تحليل وتقييم الوظائف</span><span class="c">111 بشري</span></td><td><span class="n">الاستقطاب والاختيار</span><span class="c">221 بشري</span></td><td><span class="n">تدريب وتنمية الموارد البشرية</span><span class="c">222 بشري</span></td><td><span class="n">التعرف على عالم الأعمال (2)</span><span class="c">102 كابز</span></td></tr><tr><th class="day">الثلاثاء</th><td class="date"><b>9 جمادى الأولى 1448هـ</b><span>20 أكتوبر 2026م</span></td><td><span class="n">مبادئ إدارة الأعمال</span><span class="c">101 ادار</span></td><td><span class="n">التوجيه المهني والتميز</span><span class="c">101 مهني</span><span class="sep"></span><span class="n">الكتابة الفنية</span><span class="c">101 عربي</span><span class="t">◷ 6:15 – 8:15 م</span></td><td><span class="n">الدراسات الإسلامية</span><span class="c">101 اسلم</span></td><td><span class="n">تطبيقات الحاسب المتقدمة</span><span class="c">102 حاسب</span></td><td class="empty">—</td><td><span class="n">إدارة الخدمة المدنية</span><span class="c">232 بشري</span></td><td><span class="n">إدارة نظم الأجور والتعويضات</span><span class="c">223 بشري</span></td></tr><tr><th class="day">الأربعاء</th><td class="date"><b>10 جمادى الأولى 1448هـ</b><span>21 أكتوبر 2026م</span></td><td class="empty">—</td><td><span class="n">التعرف على عالم الأعمال (1)</span><span class="c">101 كابز</span></td><td class="empty">—</td><td><span class="n">تخطيط الموارد البشرية</span><span class="c">112 بشري</span></td><td><span class="n">مهارات التعلم</span><span class="c">101 ماهر</span><span class="t">◷ 4:00 – 6:00 م</span></td><td class="empty">—</td><td><span class="n">مصطلحات إنجليزية في إدارة الموارد البشرية</span><span class="c">241 بشري</span></td></tr></tbody></table></section>
+<section class="dip" style="--acc:#A85A1B;--tint:#F8ECDF">
+<table><colgroup><col class="cday"><col class="cdate"><col><col><col><col><col><col><col></colgroup>
+<thead><tr><td class="band" colspan="9"><span class="bt">دبلوم التقنية والغذاء — تخصص السلامة والصحة المهنية</span>
+<span class="bp">الفترة الاعتيادية للاختبار: <b>4:00 – 6:00 م</b></span></td></tr>
+<tr class="hd"><th>اليوم</th><th>التاريخ</th><th>المستوى الأول<small>الشعبة: A</small></th><th>المستوى الثاني<small>الشعبة: A</small></th><th>المستوى الثالث<small>الشعبة: A</small></th><th>المستوى الرابع<small>الشعب: A · B</small></th><th>المستوى الخامس<small>الشعبة: A</small></th><th>المستوى السادس<small>الشعب: A · B · C</small></th><th>المستوى السابع<small>الشعبة: A</small></th></tr></thead>
+<tbody><tr><th class="day">الأحد</th><td class="date"><b>7 جمادى الأولى 1448هـ</b><span>18 أكتوبر 2026م</span></td><td><span class="n">الكيمياء</span><span class="c">111 كيمي</span></td><td><span class="n">الرياضيات</span><span class="c">101 رياض</span></td><td><span class="n">المخاطر في الإنشاءات</span><span class="c">142 سلام</span></td><td><span class="n">المخاطر في الصناعة</span><span class="c">141 سلام</span></td><td><span class="n">مكافحة الحرائق</span><span class="c">251 سلام</span></td><td><span class="n">مقدمة في علم الإحصاء</span><span class="c">111 احصا</span></td><td><span class="n">السلوك الوظيفي ومهارات الاتصال</span><span class="c">101 اسلك</span><span class="t">◷ 4:15 – 6:15 م</span></td></tr><tr><th class="day">الاثنين</th><td class="date"><b>8 جمادى الأولى 1448هـ</b><span>19 أكتوبر 2026م</span></td><td><span class="n">لغة إنجليزية (1)</span><span class="c">101 انجل</span></td><td><span class="n">مقدمة تطبيقات الحاسب</span><span class="c">101 حاسب</span><span class="t">◷ 4:15 – 6:15 م</span></td><td><span class="n">لغة إنجليزية (2)</span><span class="c">102 انجل</span></td><td><span class="n">نظام إدارة السلامة والصحة المهنية</span><span class="c">171 سلام</span></td><td><span class="n">لغة إنجليزية (3)</span><span class="c">103 انجل</span></td><td><span class="n">علم السموم</span><span class="c">121 سلام</span></td><td><span class="n">الإخلاء والإسعافات الأولية</span><span class="c">253 سلام</span></td></tr><tr><th class="day">الثلاثاء</th><td class="date"><b>9 جمادى الأولى 1448هـ</b><span>20 أكتوبر 2026م</span></td><td><span class="n">التوجيه المهني والتميز</span><span class="c">101 مهني</span><span class="t">◷ 4:15 – 6:15 م</span></td><td><span class="n">الدراسات الإسلامية</span><span class="c">101 اسلم</span><span class="t">◷ 4:15 – 6:15 م</span></td><td><span class="n">الأحياء الدقيقة والطفيليات</span><span class="c">111 احيا</span></td><td><span class="n">الكتابة الفنية</span><span class="c">101 عربي</span><span class="t">◷ 6:15 – 8:15 م</span></td><td><span class="n">أنظمة ولوائح السلامة والصحة المهنية</span><span class="c">272 سلام</span></td><td><span class="n">السلامة المرورية</span><span class="c">223 سلام</span></td><td><span class="n">التفتيش الميداني</span><span class="c">274 سلام</span></td></tr><tr><th class="day">الأربعاء</th><td class="date"><b>10 جمادى الأولى 1448هـ</b><span>21 أكتوبر 2026م</span></td><td><span class="n">مدخل إلى علم البيئة</span><span class="c">101 حامي</span></td><td><span class="n">مقدمة في السلامة والصحة المهنية</span><span class="c">111 سلام</span></td><td class="empty">—</td><td><span class="n">مهارات التعلم</span><span class="c">101 ماهر</span></td><td><span class="n">سلامة بيئة العمل</span><span class="c">222 سلام</span></td><td><span class="n">الاستجابة للطوارئ</span><span class="c">252 سلام</span></td><td><span class="n">تحليل البيانات باستخدام تطبيقات الحاسب الآلي</span><span class="c">281 حامي</span></td></tr></tbody></table></section>
+<div class="bottom">
+  <aside class="panel">
+    <div>
+      <h3>ملاحظات</h3>
+      <ul>
+        <li class="clock">الخانات المميزة بالرمز ◷ تُعقد في توقيت يختلف عن الفترة الاعتيادية للدبلوم، وهي في الغالب اختبارات مشتركة بين دبلومين في المقرر نفسه.</li>
+        <li>الشعب المدوّنة أسفل كل مستوى هي الشعب المشمولة باختبارات ذلك المستوى، وتؤدي جميعها الاختبار في الموعد ذاته.</li>
+        <li>الرمز (—) يعني عدم وجود اختبار للمستوى في ذلك اليوم.</li>
+      </ul>
+    </div>
+    <div class="sigs">
+      <div><div class="r">إعداد: لجنة الاختبارات</div><div class="nm">رواد الخضير</div>
+        <div class="ln">التوقيع: ....................&emsp;التاريخ:&nbsp;&nbsp;/&nbsp;&nbsp;/ 1448هـ</div></div>
+      <div><div class="r">اعتماد: رئيس لجنة الاختبارات</div><div class="nm">د. مجدي سالم</div>
+        <div class="ln">التوقيع: ....................&emsp;التاريخ:&nbsp;&nbsp;/&nbsp;&nbsp;/ 1448هـ</div></div>
+    </div>
+  </aside>
+  <section class="dip" style="--acc:#5B3F8C;--tint:#ECE6F5">
+<table><colgroup><col style="width:9%"><col style="width:15%"><col><col></colgroup>
+<thead><tr><td class="band" colspan="4"><span class="bt">دبلوم تقنية الذكاء الاصطناعي</span>
+<span class="bp">الفترة الاعتيادية للاختبار: <b>4:00 – 6:00 م</b></span></td></tr>
+<tr class="hd"><th>اليوم</th><th>التاريخ</th><th>المستوى الأول<small>الشعبة: A</small></th><th>المستوى الثالث<small>الشعبة: A</small></th></tr></thead>
+<tbody><tr><th class="day">الأحد</th><td class="date"><b>7 جمادى الأولى 1448هـ</b><span>18 أكتوبر 2026م</span></td><td><span class="n">مقدمة في البرمجة</span><span class="c">101 ذكاء</span></td><td><span class="n">البرمجة بلغة بايثون (1)</span><span class="c">105 ذكاء</span></td></tr><tr><th class="day">الاثنين</th><td class="date"><b>8 جمادى الأولى 1448هـ</b><span>19 أكتوبر 2026م</span></td><td><span class="n">لغة إنجليزية (1)</span><span class="c">101 انجل</span></td><td><span class="n">لغة إنجليزية (2)</span><span class="c">102 انجل</span></td></tr><tr><th class="day">الثلاثاء</th><td class="date"><b>9 جمادى الأولى 1448هـ</b><span>20 أكتوبر 2026م</span></td><td><span class="n">الرياضيات</span><span class="c">101 رياض</span></td><td><span class="n">مقدمة في علوم البيانات</span><span class="c">106 ذكاء</span></td></tr><tr><th class="day">الأربعاء</th><td class="date"><b>10 جمادى الأولى 1448هـ</b><span>21 أكتوبر 2026م</span></td><td><span class="n">مقدمة تطبيقات الحاسب</span><span class="c">101 حاسب</span></td><td><span class="n">تطبيقات الحاسب المتقدمة</span><span class="c">102 حاسب</span></td></tr></tbody></table></section>
+</div>
+<footer>لجنة الاختبارات — معهد أكاديمية التدريب النوعي العالي للتدريب</footer>
+</div></main>
+<script>
+(function () {
+  var sheet = document.querySelector(".sheet"), inner = document.querySelector(".inner");
+  function fit() {
+    inner.style.zoom = 1;
+    var avail = sheet.clientHeight - parseFloat(getComputedStyle(sheet).paddingTop) - parseFloat(getComputedStyle(sheet).paddingBottom);
+    var need = inner.scrollHeight;
+    if (need > avail) inner.style.zoom = (avail / need).toFixed(4);
+  }
+  window.addEventListener("beforeprint", fit);
+  window.addEventListener("resize", fit);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(fit);
+  fit();
+})();
+</script>
+</body>
+</html>
